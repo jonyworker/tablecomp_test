@@ -29,14 +29,14 @@ const props = defineProps({
 const emit = defineEmits(["rowSelected"]);
 
 // Reactive data
-const data = ref(props.data);
+const data = ref([...props.data]);
 
-// Method to handle row selection
+// row 被點擊時該做的事
 function rowSelected(item) {
     console.log("item", item);
     emit("rowSelected", item);
 }
-// Method to select or deselect all rows
+// 全選
 function selectAll(e) {
     const checked = e.target.checked;
     data.value.forEach((item) => {
@@ -44,13 +44,13 @@ function selectAll(e) {
     });
 }
 
-// Method to check if a named slot exists
+// 檢查父層有沒有具名 slot
 function hasNamedSlot(slotName) {
     return !!slots[slotName];
 }
 
-// Expose methods and properties
-const slots = useSlots(); // To access slots in the template
+// 取用父層template slot
+const slots = useSlots();
 </script>
 
 <template>
@@ -62,7 +62,7 @@ const slots = useSlots(); // To access slots in the template
     <table style="border-collapse: collapse" class="mytable">
         <thead>
             <tr>
-                <th v-if="rowSelector" scope="col">
+                <th class="table__header" v-if="rowSelector" scope="col">
                     <div>
                         <input
                             id="contact-selectAll"
@@ -72,14 +72,19 @@ const slots = useSlots(); // To access slots in the template
                         />
                     </div>
                 </th>
-                <th v-for="(item, idx) in fields" :key="idx" width="500px">
+                <th
+                    class="table__header"
+                    v-for="(item, idx) in fields"
+                    :key="idx"
+                    width="20000px"
+                >
                     {{ item.label }}
                 </th>
             </tr>
         </thead>
         <tbody>
             <tr v-for="(item, index) in data" :key="index">
-                <td v-if="rowSelector">
+                <td class="table__cell" v-if="rowSelector">
                     <div>
                         <input
                             :id="`contact-${index}`"
@@ -92,7 +97,7 @@ const slots = useSlots(); // To access slots in the template
                     v-for="(field, idx) in fields"
                     :key="idx"
                     @click="rowSelected(item)"
-                    class="text-ellipsis"
+                    class="table__cell text--ellipsis"
                 >
                     <span v-if="!hasNamedSlot(field.key)" :item="item">
                         {{ item[field.key] }}
@@ -105,55 +110,58 @@ const slots = useSlots(); // To access slots in the template
 </template>
 
 <style scoped>
-th,
-td {
-    border: 1px solid #000;
-    padding: 20px;
-}
-.mytable {
-    table-layout: fixed;
-    /* text-overflow: ellipsis; */
-}
 * {
     box-sizing: border-box;
 }
-.tdBreakAll {
+.table__header,
+.table__cell {
+    border: 1px solid #000;
+    padding: 20px;
+}
+.table--fixed-layout {
+    table-layout: fixed;
+    /* text-overflow: ellipsis; */
+}
+
+.cell--break-all {
     word-break: break-all;
 }
-.tdBreakNormal {
+.cell--break-normal {
     word-break: normal;
 }
 
-.tdBreakWord {
+.cell--break-word {
     word-break: break-word;
 }
-.text-ellipsis {
+.text--ellipsis {
     max-width: 100px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
-.text-ellipsis:hover {
+.text--ellipsis:hover {
     overflow: visible;
     white-space: normal;
 }
-.text-clipped {
+
+.text--clip {
     max-width: 100px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: clip;
 }
-.text-clipped:hover {
+.text--clip:hover {
     overflow: visible;
     white-space: normal;
 }
-.text-string {
+
+.text--string {
     max-width: 100px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: string;
 }
-.text-string:hover {
+.text--string:hover {
     overflow: visible;
     white-space: normal;
 }

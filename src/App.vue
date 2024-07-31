@@ -5,7 +5,7 @@ const data = [
     {
         id: 1,
         name: "John",
-        email: "Tutorials Point originated from the idea that there exists a class of readers who respond better to online content and prefer to learn new skills at their own pace from the comforts of their drawing rooms.",
+        email: "Tutorials ",
     },
     {
         id: 2,
@@ -25,6 +25,10 @@ const fields = [
     { key: "email", label: "Email" },
     { key: "sex", label: "Sex" },
 ];
+const tableHeader = {
+    title: "表格標題",
+    description: "表格描述表格描述表格描述表格描述表格描述",
+};
 function rowSelected(item) {
     if (item.selected == null) {
         item.selected = true;
@@ -39,15 +43,17 @@ function rowSelected(item) {
     <j-table
         :fields="fields"
         :data="data"
-        :row-selector="true"
+        :row-selector="false"
+        :header="tableHeader"
+        :rowSelector="true"
         @rowSelected="rowSelected"
     >
-        <template #name="{ item }" width="500px">
+        <!-- <template #name="{ item }" width="500px">
             <span :style="{ color: item.name === 'John' ? 'red' : '' }">
                 {{ item.name }}
                 <button>典籍</button>
             </span>
-        </template>
+        </template> -->
     </j-table>
 </template>
 
