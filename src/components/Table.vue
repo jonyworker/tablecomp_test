@@ -59,68 +59,115 @@ const slots = useSlots();
         <h2>{{ header.title }}</h2>
         <p>{{ header.description }}</p>
     </div>
-    <table style="border-collapse: collapse" class="mytable">
-        <thead>
-            <tr>
-                <th class="table__header" v-if="rowSelector" scope="col">
-                    <div>
-                        <input
-                            id="contact-selectAll"
-                            type="checkbox"
-                            value=""
-                            @change="selectAll"
-                        />
-                    </div>
-                </th>
-                <th
-                    class="table__header"
-                    v-for="(item, idx) in fields"
-                    :key="idx"
-                    width="20000px"
-                >
-                    {{ item.label }}
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="(item, index) in data" :key="index">
-                <td class="table__cell" v-if="rowSelector">
-                    <div>
-                        <input
-                            :id="`contact-${index}`"
-                            v-model="item.selected"
-                            type="checkbox"
-                        />
-                    </div>
-                </td>
-                <td
-                    v-for="(field, idx) in fields"
-                    :key="idx"
-                    @click="rowSelected(item)"
-                    class="table__cell text--ellipsis"
-                >
-                    <span v-if="!hasNamedSlot(field.key)" :item="item">
-                        {{ item[field.key] }}
-                    </span>
-                    <slot v-else :name="field.key" :item="item" />
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="table-container">
+        <div style="min-width: 100%">
+            <table style="border-collapse: collapse" class="table">
+                <thead>
+                    <tr>
+                        <th
+                            class="table__header text--left"
+                            v-if="rowSelector"
+                            scope="col"
+                        >
+                            <div
+                                style="
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                "
+                            >
+                                <input
+                                    id="contact-selectAll"
+                                    type="checkbox"
+                                    value=""
+                                    @change="selectAll"
+                                    style="margin: 0"
+                                />
+                            </div>
+                        </th>
+                        <th
+                            class="table__header text--left"
+                            v-for="(item, idx) in fields"
+                            :key="idx"
+                        >
+                            {{ item.label }}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(item, index) in data" :key="index">
+                        <td class="table__cell text--left" v-if="rowSelector">
+                            <div
+                                style="
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                "
+                            >
+                                <input
+                                    :id="`contact-${index}`"
+                                    v-model="item.selected"
+                                    type="checkbox"
+                                    style="margin: 0"
+                                />
+                            </div>
+                        </td>
+                        <td
+                            v-for="(field, idx) in fields"
+                            :key="idx"
+                            @click="rowSelected(item)"
+                            class="table__cell text--left"
+                            style="min-width: none; max-width: 200px"
+                        >
+                            <!-- max-width:  -->
+                            <div class="text--ellipsis">
+                                <span
+                                    v-if="!hasNamedSlot(field.key)"
+                                    :item="item"
+                                >
+                                    {{ item[field.key] }}
+                                </span>
+                                <slot v-else :name="field.key" :item="item" />
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </template>
 
 <style scoped>
 * {
     box-sizing: border-box;
 }
-.table__header,
-.table__cell {
-    border: 1px solid #000;
-    padding: 20px;
+.table-container {
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    overflow-x: auto;
+}
+.table {
+    /* border: 1px solid #f00; */
+    min-width: 100%;
 }
 .table--fixed-layout {
     table-layout: fixed;
     /* text-overflow: ellipsis; */
+}
+.table__header,
+.table__cell {
+    border-bottom: 1px solid #f5f5f5;
+    vertical-align: middle;
+}
+.table__header {
+    background-color: #f2f2f2;
+    font-size: 12px;
+    padding: 12px 24px;
+    /* min-width: 100px; */
+}
+.table__cell {
+    padding: 16px 24px;
 }
 
 .cell--break-all {
@@ -129,12 +176,24 @@ const slots = useSlots();
 .cell--break-normal {
     word-break: normal;
 }
-
 .cell--break-word {
     word-break: break-word;
 }
+
+/*--- th, td 字體對齊 ---*/
+.text--left {
+    text-align: left;
+}
+.text--center {
+    text-align: center;
+}
+.text--right {
+    text-align: right;
+}
+
+/*--- th, td 字體對齊 ---*/
 .text--ellipsis {
-    max-width: 100px;
+    /* max-width: 100px; */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -145,7 +204,7 @@ const slots = useSlots();
 }
 
 .text--clip {
-    max-width: 100px;
+    /* max-width: 100px; */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: clip;
@@ -156,7 +215,7 @@ const slots = useSlots();
 }
 
 .text--string {
-    max-width: 100px;
+    /* max-width: 100px; */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: string;

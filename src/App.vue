@@ -5,7 +5,7 @@ const data = [
     {
         id: 1,
         name: "John",
-        email: "Tutorials ",
+        email: "sdkfjslkjflsjlfkasjfk,sfjsfks , , s, sfoasfdlalksflkaskdflsadlks, s, fdksakfdlasljdf ",
     },
     {
         id: 2,
@@ -21,9 +21,9 @@ const data = [
 ];
 const fields = [
     { key: "id", label: "ID" },
-    { key: "name", label: "Name" },
-    { key: "email", label: "Email" },
-    { key: "sex", label: "Sex" },
+    { key: "name", label: "NAME", minWidth: 10, maxWidth: 200 },
+    { key: "email", label: "EMAIL", minWidth: 10, maxWidth: 200 },
+    { key: "sex", label: "SEX", minWidth: 10, maxWidth: 200 },
 ];
 const tableHeader = {
     title: "表格標題",
