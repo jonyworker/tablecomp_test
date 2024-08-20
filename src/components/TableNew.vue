@@ -29,7 +29,7 @@ const props = defineProps({
 });
 
 // Define emits
-const emit = defineEmits(["rowSelected"]);
+const emit = defineEmits(["rowSelected", "selectFiledAll"]);
 
 // Reactive data
 const data = ref([...props.data]);
@@ -38,6 +38,12 @@ const data = ref([...props.data]);
 function rowSelected(item) {
     console.log("item", item);
     emit("rowSelected", item);
+}
+
+// row 被點擊時該做的事
+function selectFiledAll(item) {
+    console.log("item", item);
+    emit("selectFiledAll", item);
 }
 // 全選
 function selectAll(e) {
@@ -64,13 +70,42 @@ const slots = useSlots();
     </div>
     <div class="table-container">
         <div style="min-width: 100%">
-            <table style="border-collapse: collapse" class="table">
-                <!-- 控制寬度 -->
+            <table
+                style="border-collapse: collapse"
+                class="table table--fixed-layout"
+            >
+                <!-- 設定欄位寬度 -->
                 <colgroup>
-                    <col style="width: 70px" />
+                    <!-- 到時可寫一支渲染程式 -->
+                    <!-- Checkbox -->
                     <col />
+                    <!-- Delivery ID -->
+                    <col style="min-width: 150px" />
+                    <!-- 發票號碼 -->
+                    <col style="min-width: 150px" />
+                    <!-- 發票日期 -->
+                    <col style="min-width: 100px" />
+                    <!-- 幣別 -->
                     <col />
+                    <!-- 匯率 -->
+                    <col style="min-width: 65px; width: 100px" />
+                    <!-- 總價 -->
                     <col />
+                    <!-- 預計出貨日 -->
+                    <col style="min-width: 90px" />
+                    <!-- 明細 -->
+                    <col />
+                    <!-- 編輯 -->
+                    <col />
+                    <!-- 更新 -->
+                    <col />
+                    <!-- 列印 -->
+                    <col />
+                    <!-- 出貨 -->
+                    <col />
+                    <!-- 廢除 -->
+                    <col />
+                    <!-- 選擇 -->
                     <col />
                 </colgroup>
                 <thead>
@@ -96,6 +131,7 @@ const slots = useSlots();
                                 />
                             </div>
                         </th>
+
                         <th
                             class="table__header text--left"
                             v-for="(filed, filedIdx) in fields"
@@ -134,7 +170,7 @@ const slots = useSlots();
                                 "
                             >
                                 <input
-                                    :id="`contact-${dataIdx}`"
+                                    :id="`${dataIdx}`"
                                     v-model="dataItem.selected"
                                     type="checkbox"
                                     style="margin: 0"
@@ -142,12 +178,11 @@ const slots = useSlots();
                             </div>
                         </td>
                         <!-- style="min-width: none; max-width: 200px" -->
+                        <!-- @click="rowSelected(dataItem)" -->
                         <td
                             v-for="(field, filedIdx) in fields"
                             :key="filedIdx"
-                            @click="rowSelected(dataItem)"
-                            class="table__cell text--left text--ellipsis"
-                            style="min-width: none; max-width: 200px"
+                            class="table__cell text--left"
                             :style="
                                 props.zebra == true && dataIdx % 2 === 0
                                     ? 'background-color: #f2f2f2;'
@@ -174,7 +209,7 @@ const slots = useSlots();
     box-sizing: border-box;
 }
 .table-container {
-    border-radius: 4px;
+    /* border-radius: 4px; */
     overflow: hidden;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
     overflow-x: auto;
@@ -189,27 +224,21 @@ const slots = useSlots();
 }
 .table__header,
 .table__cell {
-    border-bottom: 1px solid #f5f5f5;
+    border: 1px solid #e7e7e7;
     vertical-align: middle;
     background-color: #fff;
 }
 
 .table__header {
-    background-color: #f2f2f2;
+    border-color: #f2f2f2;
+    background-color: #212529;
+    border-top: none;
     font-size: 12px;
-    padding: 12px 24px;
-    /* min-width: 100px; */
+    padding: 8px;
+    color: #fff;
 }
 .table__cell {
-    padding: 16px 24px;
-}
-
-/* 控制 FROZEN CELL */
-.table__header:first-child,
-.table__cell:first-child {
-    position: sticky;
-    left: -1px;
-    z-index: 1;
+    padding: 16px 8px;
 }
 
 .cell--break-all {
@@ -268,13 +297,13 @@ const slots = useSlots();
 }
 
 /*
-table-layout: auto;（預設值）
-行為： 表格的列寬由內容決定。即，列的寬度會根據單元格內容自動調整。如果內容很長，列寬會變大以適應內容，這可能會導致表格渲染變慢，尤其是對於大型表格。
-應用： 這是 table-layout 的默認值，適合需要根據內容自動調整列寬的情境。
+    table-layout: auto;（預設值）
+    行為： 表格的列寬由內容決定。即，列的寬度會根據單元格內容自動調整。如果內容很長，列寬會變大以適應內容，這可能會導致表格渲染變慢，尤其是對於大型表格。
+    應用： 這是 table-layout 的默認值，適合需要根據內容自動調整列寬的情境。
 
 
-table-layout: fixed;
-行為： 表格的列寬由第一行的單元格寬度決定。即，列的寬度根據表格的總寬度和列數來計算，而不依賴於內容的實際寬度。這使得表格渲染速度更快，因為瀏覽器可以立即計算列的寬度，而不必等待所有內容加載完畢。
-應用： 適合需要一致列寬且不依賴於內容寬度的情境，特別是當表格有大量數據時，可以提高性能和穩定性。
-*/
+    table-layout: fixed;
+    行為： 表格的列寬由第一行的單元格寬度決定。即，列的寬度根據表格的總寬度和列數來計算，而不依賴於內容的實際寬度。這使得表格渲染速度更快，因為瀏覽器可以立即計算列的寬度，而不必等待所有內容加載完畢。
+    應用： 適合需要一致列寬且不依賴於內容寬度的情境，特別是當表格有大量數據時，可以提高性能和穩定性。
+    */
 </style>
