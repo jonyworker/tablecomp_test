@@ -2,6 +2,8 @@
 import { ref, reactive } from "vue";
 import JTable from "./components/Table/Table.vue";
 import Rating from "./components/Rating.vue";
+import Accordion from "./components/Accordion/Accordion.vue";
+import RadioButton from "./components/Radiobutton/Radiobutton.vue";
 
 const data = [
     {
@@ -184,6 +186,17 @@ const ratingData = ref([
         rating: 4,
     },
 ]);
+const radioList = [
+    {
+        label: "麵包",
+        value: "PAN",
+    },
+    {
+        label: "布丁",
+        value: "PUDDING",
+    },
+];
+const isRadioPicked = ref("");
 </script>
 
 <template>
@@ -453,6 +466,15 @@ const ratingData = ref([
 
     <Rating v-model="ratingData"></Rating>
     {{ ratingData }}
+    <Accordion></Accordion>
+    isRadioPicked>>> {{ isRadioPicked }}
+    <div></div>
+    <RadioButton
+        v-for="item in radioList"
+        :value="item.value"
+        :label="item.label"
+        v-model="isRadioPicked"
+    ></RadioButton>
 </template>
 
 <style scoped>
