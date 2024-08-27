@@ -1,59 +1,103 @@
 <script setup>
 import { ref, computed, useSlots } from "vue";
 
-// Define props
+// 定義 props
 const props = defineProps({
-    data: {
+    // 資料接口
+    columnHeadData: {
         type: Array,
         required: true,
         default: () => [],
     },
+    columnCellData: {
+        type: Array,
+        required: true,
+        default: () => [],
+    },
+
     header: {
+        //TABLE HEAD
         type: Object,
         required: false,
         default: () => null,
     },
-    fields: {
-        type: Array,
-        required: true,
-        default: () => [],
+    // 樣式接口
+    zebra: {
+        //斑馬條紋顯示
+        type: Boolean,
     },
+
+    // 動作接口
     rowSelector: {
+        //開啟 checkbox
         type: Boolean,
         required: false,
         default: false,
     },
-    zebra: {
-        type: Boolean,
-    },
 });
 
-// Define emits
-const emit = defineEmits(["rowSelected"]);
+// 定義 emits
+const emits = defineEmits(["rowSelected"]);
 
-// Reactive data
-const data = ref([...props.data]);
+// 複製一份傳入的 columnCellData
+const copyColumnCellData = ref([...props.columnCellData]);
 
-// row 被點擊時該做的事
+// 功能 - row 被點擊時該做的事
 function rowSelected(item) {
-    console.log("item", item);
-    emit("rowSelected", item);
+    console.log("child>>>", item);
+    emits("rowSelected", item);
 }
-// 全選
+
+// 功能 - 全選
 function selectAll(e) {
     const checked = e.target.checked;
-    data.value.forEach((item) => {
+    copyColumnCellData.value.forEach((item) => {
         item.selected = checked;
     });
 }
 
-// 檢查父層有沒有具名 slot
+// 爲每個 columnHead 初始默認排序狀態
+const sortStates = ref(
+    props.columnHeadData.reduce((acc, col) => {
+        acc[col.key] = "default";
+        return acc;
+    }, {})
+);
+
+// 功能 - 排序
+function sort(columnKey) {
+    const currentSortState = sortStates.value[columnKey];
+
+    // 切換排序狀態
+    if (currentSortState === "default") {
+        sortStates.value[columnKey] = "asc";
+    } else if (currentSortState === "asc") {
+        sortStates.value[columnKey] = "desc";
+    } else {
+        sortStates.value[columnKey] = "default";
+    }
+
+    // 根據排序狀態進行排序
+    if (sortStates.value[columnKey] === "asc") {
+        copyColumnCellData.value.sort((a, b) =>
+            a[columnKey] > b[columnKey] ? 1 : -1
+        );
+    } else if (sortStates.value[columnKey] === "desc") {
+        copyColumnCellData.value.sort((a, b) =>
+            a[columnKey] < b[columnKey] ? 1 : -1
+        );
+    } else {
+        // 默認排序，恢復原始順序
+        copyColumnCellData.value = [...props.columnCellData];
+    }
+}
+
+// 取得所有設定的 slot
+const slots = useSlots();
+// 功能 - 檢查父層有沒有設定具名 slot
 function hasNamedSlot(slotName) {
     return !!slots[slotName];
 }
-
-// 取用父層template slot
-const slots = useSlots();
 </script>
 
 <template>
@@ -65,7 +109,7 @@ const slots = useSlots();
     <div class="table-container">
         <div style="min-width: 100%">
             <table style="border-collapse: collapse" class="table">
-                <!-- 控制寬度 -->
+                <!-- Table - 控制 column 寬度(對應) -->
                 <colgroup>
                     <col style="width: 70px" />
                     <col />
@@ -73,8 +117,10 @@ const slots = useSlots();
                     <col />
                     <col />
                 </colgroup>
+                <!-- Table - 標題列 -->
                 <thead>
                     <tr>
+                        <!-- Table - 標題列 - 根據 props.rowSelector 渲染 checkbox -->
                         <th
                             class="table__header text--left"
                             v-if="rowSelector"
@@ -96,32 +142,61 @@ const slots = useSlots();
                                 />
                             </div>
                         </th>
+                        <!-- Table - 標題列 - 根據 fieldData 渲染標題列或透過 slot 客製化 -->
                         <th
                             class="table__header text--left"
-                            v-for="(filed, filedIdx) in fields"
-                            :key="filedIdx"
+                            v-for="(
+                                columnHeadItem, columnHeadIdx
+                            ) in props.columnHeadData"
+                            :key="columnHeadIdx"
                         >
-                            <span
-                                v-if="!hasNamedSlot(`filed-${filed.key}`)"
-                                :item="filed"
+                            <div
+                                v-if="
+                                    !hasNamedSlot(
+                                        `columnHead-${columnHeadItem.key}`
+                                    )
+                                "
+                                :item="columnHeadItem"
                             >
-                                {{ filed.label }}
-                            </span>
+                                {{ columnHeadItem.label }}
+                                <button
+                                    v-if="columnHeadItem.sort"
+                                    @click="sort(columnHeadItem.key)"
+                                    style="cursor: pointer"
+                                >
+                                    {{
+                                        sortStates[columnHeadItem.key] === "asc"
+                                            ? "升冪"
+                                            : sortStates[columnHeadItem.key] ===
+                                              "desc"
+                                            ? "降冪"
+                                            : "默認"
+                                    }}
+                                </button>
+                            </div>
                             <slot
                                 v-else
-                                :name="`filed-${filed.key}`"
-                                :item="filed"
+                                :name="`columnHead-${columnHeadItem.key}`"
+                                :item="columnHeadItem"
                             />
                         </th>
                     </tr>
                 </thead>
+
+                <!-- Table - 單元格 -->
                 <tbody>
-                    <tr v-for="(dataItem, dataIdx) in data" :key="dataIdx">
+                    <tr
+                        v-for="(
+                            columnCellItem, columnCellIdx
+                        ) in copyColumnCellData"
+                        :key="columnCellIdx"
+                    >
+                        <!-- Table - 單元格 - 根據 props.rowSelector 渲染 checkbox -->
                         <td
                             v-if="rowSelector"
                             class="table__cell text--left"
                             :style="
-                                props.zebra == true && dataIdx % 2 === 0
+                                props.zebra == true && columnCellIdx % 2 === 0
                                     ? 'background-color: #f2f2f2;'
                                     : 'background-color: #fff'
                             "
@@ -134,18 +209,22 @@ const slots = useSlots();
                                 "
                             >
                                 <input
-                                    :id="`contact-${dataIdx}`"
-                                    v-model="dataItem.selected"
+                                    :id="`row-${columnCellIdx}`"
+                                    v-model="columnCellItem.selected"
                                     type="checkbox"
                                     style="margin: 0"
                                 />
                             </div>
                         </td>
                         <!-- style="min-width: none; max-width: 200px" -->
+
+                        <!-- Table - 單元格 - 根據 fieldData 渲染單元格或透過 slot 客製化 -->
                         <td
-                            v-for="(field, filedIdx) in fields"
-                            :key="filedIdx"
-                            @click="rowSelected(dataItem)"
+                            v-for="(
+                                columnHeadItem, columnHeadIdx
+                            ) in props.columnHeadData"
+                            :key="columnHeadIdx"
+                            @click="rowSelected(columnCellItem)"
                             class="table__cell text--left text--ellipsis"
                             style="min-width: none; max-width: 200px"
                             :style="
@@ -155,12 +234,16 @@ const slots = useSlots();
                             "
                         >
                             <span
-                                v-if="!hasNamedSlot(field.key)"
-                                :item="dataItem"
+                                v-if="!hasNamedSlot(columnHeadItem.key)"
+                                :item="columnCellItem"
                             >
-                                {{ dataItem[field.key] }}
+                                {{ columnCellItem[columnHeadItem.key] }}
                             </span>
-                            <slot v-else :name="field.key" :item="dataItem" />
+                            <slot
+                                v-else
+                                :name="columnHeadItem.key"
+                                :item="columnCellItem"
+                            />
                         </td>
                     </tr>
                 </tbody>
@@ -268,13 +351,13 @@ const slots = useSlots();
 }
 
 /*
-table-layout: auto;（預設值）
-行為： 表格的列寬由內容決定。即，列的寬度會根據單元格內容自動調整。如果內容很長，列寬會變大以適應內容，這可能會導致表格渲染變慢，尤其是對於大型表格。
-應用： 這是 table-layout 的默認值，適合需要根據內容自動調整列寬的情境。
+    table-layout: auto;（預設值）
+    行為： 表格的列寬由內容決定。即，列的寬度會根據單元格內容自動調整。如果內容很長，列寬會變大以適應內容，這可能會導致表格渲染變慢，尤其是對於大型表格。
+    應用： 這是 table-layout 的默認值，適合需要根據內容自動調整列寬的情境。
 
 
-table-layout: fixed;
-行為： 表格的列寬由第一行的單元格寬度決定。即，列的寬度根據表格的總寬度和列數來計算，而不依賴於內容的實際寬度。這使得表格渲染速度更快，因為瀏覽器可以立即計算列的寬度，而不必等待所有內容加載完畢。
-應用： 適合需要一致列寬且不依賴於內容寬度的情境，特別是當表格有大量數據時，可以提高性能和穩定性。
-*/
+    table-layout: fixed;
+    行為： 表格的列寬由第一行的單元格寬度決定。即，列的寬度根據表格的總寬度和列數來計算，而不依賴於內容的實際寬度。這使得表格渲染速度更快，因為瀏覽器可以立即計算列的寬度，而不必等待所有內容加載完畢。
+    應用： 適合需要一致列寬且不依賴於內容寬度的情境，特別是當表格有大量數據時，可以提高性能和穩定性。
+    */
 </style>

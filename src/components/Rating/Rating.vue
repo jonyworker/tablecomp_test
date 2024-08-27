@@ -8,12 +8,6 @@ const props = defineProps({
     },
 });
 
-// 處理 input 雙向綁定
-// const emits = defineEmits(["update:modelValue"]);
-// const handleClick = (event) => {
-//     emits("update:modelValue", event.target.value);
-// };
-
 // 雙向綁定
 const modelValue = defineModel();
 

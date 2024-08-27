@@ -3,21 +3,26 @@ import { ref, computed, useSlots } from "vue";
 
 // Define props
 const props = defineProps({
-    data: {
+    // 資料接口
+    fields: {
+        // 標題列資料
         type: Array,
         required: true,
         default: () => [],
     },
+    tableData: {
+        // 標題列資料
+        type: Array,
+        required: true,
+        default: () => [],
+    },
+    // 資料接口
     header: {
         type: Object,
         required: false,
         default: () => null,
     },
-    fields: {
-        type: Array,
-        required: true,
-        default: () => [],
-    },
+
     rowSelector: {
         type: Boolean,
         required: false,
@@ -31,8 +36,8 @@ const props = defineProps({
 // Define emits
 const emit = defineEmits(["rowSelected", "selectFiledAll"]);
 
-// Reactive data
-const data = ref([...props.data]);
+// Reactive tableData
+const tableData = ref([...props.tableData]);
 
 // row 被點擊時該做的事
 function rowSelected(item) {
@@ -48,7 +53,7 @@ function selectFiledAll(item) {
 // 全選
 function selectAll(e) {
     const checked = e.target.checked;
-    data.value.forEach((item) => {
+    tableData.value.forEach((item) => {
         item.selected = checked;
     });
 }
@@ -110,6 +115,7 @@ const slots = useSlots();
                 </colgroup>
                 <thead>
                     <tr>
+                        <!-- 選取框 rowSelector 為 true 可選取 -->
                         <th
                             class="table__header text--left"
                             v-if="rowSelector"
@@ -132,6 +138,7 @@ const slots = useSlots();
                             </div>
                         </th>
 
+                        <!-- 渲染 filed -->
                         <th
                             class="table__header text--left"
                             v-for="(filed, filedIdx) in fields"
@@ -152,7 +159,7 @@ const slots = useSlots();
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(dataItem, dataIdx) in data" :key="dataIdx">
+                    <tr v-for="(dataItem, dataIdx) in tableData" :key="dataIdx">
                         <td
                             v-if="rowSelector"
                             class="table__cell text--left"
@@ -297,13 +304,13 @@ const slots = useSlots();
 }
 
 /*
-    table-layout: auto;（預設值）
-    行為： 表格的列寬由內容決定。即，列的寬度會根據單元格內容自動調整。如果內容很長，列寬會變大以適應內容，這可能會導致表格渲染變慢，尤其是對於大型表格。
-    應用： 這是 table-layout 的默認值，適合需要根據內容自動調整列寬的情境。
+        table-layout: auto;（預設值）
+        行為： 表格的列寬由內容決定。即，列的寬度會根據單元格內容自動調整。如果內容很長，列寬會變大以適應內容，這可能會導致表格渲染變慢，尤其是對於大型表格。
+        應用： 這是 table-layout 的默認值，適合需要根據內容自動調整列寬的情境。
 
 
-    table-layout: fixed;
-    行為： 表格的列寬由第一行的單元格寬度決定。即，列的寬度根據表格的總寬度和列數來計算，而不依賴於內容的實際寬度。這使得表格渲染速度更快，因為瀏覽器可以立即計算列的寬度，而不必等待所有內容加載完畢。
-    應用： 適合需要一致列寬且不依賴於內容寬度的情境，特別是當表格有大量數據時，可以提高性能和穩定性。
-    */
+        table-layout: fixed;
+        行為： 表格的列寬由第一行的單元格寬度決定。即，列的寬度根據表格的總寬度和列數來計算，而不依賴於內容的實際寬度。這使得表格渲染速度更快，因為瀏覽器可以立即計算列的寬度，而不必等待所有內容加載完畢。
+        應用： 適合需要一致列寬且不依賴於內容寬度的情境，特別是當表格有大量數據時，可以提高性能和穩定性。
+        */
 </style>

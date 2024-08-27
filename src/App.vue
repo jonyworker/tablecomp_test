@@ -1,11 +1,19 @@
 <script setup>
 import { ref, reactive } from "vue";
 import JTable from "./components/Table/Table.vue";
-import Rating from "./components/Rating.vue";
-import Accordion from "./components/Accordion/Accordion.vue";
-import RadioButton from "./components/Radiobutton/Radiobutton.vue";
+// import RTable from "./components/TableNew.vue";
+// import Rating from "./components/Rating.vue";
+// import Accordion from "./components/Accordion/Accordion.vue";
+// import RadioButton from "./components/Radiobutton/Radiobutton.vue";
 
-const data = [
+// import Divider from "./components/Divider/Divider.vue";
+const columnHeadData = [
+    { key: "id", label: "ID", sort: true },
+    { key: "name", label: "NAME", sort: true },
+    { key: "email", label: "EMAIL", sort: false },
+    { key: "sex", label: "SEX", sort: true },
+];
+const columnCellData = [
     {
         id: 1,
         name: "John",
@@ -22,12 +30,6 @@ const data = [
         email: "Jony@example.com",
         sex: "man",
     },
-];
-const fields = [
-    { key: "id", label: "ID" },
-    { key: "name", label: "NAME", minWidth: 10, maxWidth: 200 },
-    { key: "email", label: "EMAIL", minWidth: 10, maxWidth: 200 },
-    { key: "sex", label: "SEX", minWidth: 10, maxWidth: 200 },
 ];
 
 const iscmData = ref([
@@ -151,11 +153,13 @@ const tableHeader = {
     title: "表格標題",
     description: "表格描述表格描述表格描述表格描述表格描述",
 };
+
 function rowSelected(item) {
     if (item.selected == null) {
+        console.log("parent>>>", item);
+
         item.selected = true;
     } else {
-        // console.log("item.selected", item.selected);
         item.selected = !item.selected;
     }
 }
@@ -188,12 +192,16 @@ const ratingData = ref([
 ]);
 const radioList = [
     {
+        inputId: "dessert01",
+        name: "dessert",
+        value: "bread",
         label: "麵包",
-        value: "PAN",
     },
     {
+        inputId: "dessert02",
+        name: "dessert",
+        value: "pudding",
         label: "布丁",
-        value: "PUDDING",
     },
 ];
 const isRadioPicked = ref("");
@@ -201,30 +209,22 @@ const isRadioPicked = ref("");
 
 <template>
     <j-table
-        :fields="fields"
-        :data="data"
+        :columnHeadData="columnHeadData"
+        :columnCellData="columnCellData"
         :row-selector="false"
-        :header="tableHeader"
         :rowSelector="true"
-        @rowSelected="rowSelected"
     >
-        <template #name="{ item }">
+        <!-- <template #name="{ item }">
             <span :style="{ color: item.name === 'John' ? 'red' : '' }">
                 {{ item.name }}
                 <button>典籍</button>
             </span>
-        </template>
-
-        <!-- <template #email="{ item }">
-            <div class="text--ellipsis">
-                {{ item.email }}
-            </div>
         </template> -->
     </j-table>
 
     <r-table
         :fields="iscmFields"
-        :data="iscmData"
+        :tableData="columnCellData"
         :row-selector="false"
         :header="tableHeader"
         :rowSelector="true"
@@ -464,7 +464,7 @@ const isRadioPicked = ref("");
         </template>
     </r-table>
 
-    <Rating v-model="ratingData"></Rating>
+    <!-- <Rating v-model="ratingData"></Rating>
     {{ ratingData }}
     <Accordion></Accordion>
     isRadioPicked>>> {{ isRadioPicked }}
@@ -474,7 +474,12 @@ const isRadioPicked = ref("");
         :value="item.value"
         :label="item.label"
         v-model="isRadioPicked"
-    ></RadioButton>
+    ></RadioButton> -->
+
+    <!-- Divider -->
+    <!-- <div style="height: 200px">
+        <Divider></Divider>
+    </div> -->
 </template>
 
 <style scoped>
