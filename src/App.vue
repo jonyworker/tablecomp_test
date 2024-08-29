@@ -5,7 +5,8 @@ import JTable from "./components/Table/Table.vue";
 // import Rating from "./components/Rating.vue";
 // import Accordion from "./components/Accordion/Accordion.vue";
 // import RadioButton from "./components/Radiobutton/Radiobutton.vue";
-
+import Range from "./components/Range/Range.vue";
+import RangeNew from "./components/Range/RangeNew.vue";
 // import Divider from "./components/Divider/Divider.vue";
 const columnHeadData = [
     { key: "id", label: "ID", sort: true },
@@ -480,6 +481,10 @@ const isRadioPicked = ref("");
     <!-- <div style="height: 200px">
         <Divider></Divider>
     </div> -->
+
+    <!-- Range -->
+<!--    <Range></Range>-->
+  <RangeNew></RangeNew>
 </template>
 
 <style scoped>
