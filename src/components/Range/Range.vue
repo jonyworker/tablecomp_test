@@ -36,6 +36,7 @@ onMounted(() => {
 
 <template>
   <div class="double-slider-box">
+    ran
     <h3 class="range-title">Price Range Slider</h3>
 
     <!-- Input Range Slider -->

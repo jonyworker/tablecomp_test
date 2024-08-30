@@ -1,54 +1,98 @@
 <script setup>
-import { ref, computed  } from 'vue';
+import { ref, computed, watch  } from 'vue';
 
-// 定義 slider 最大與最小值
-const sliderMinVal = ref(0)
-const sliderMaxVal = ref(5000)
+const props = defineProps({
+  //樣式接口
+  themeColor: {
+    type: String,
+    default: "#f00",
+  },
+  // 數據接口
+  sliderMinVal:{
+    type: Number,
+    default: 0
+  },
+  sliderMaxVal: {
+    type: Number,
+    default: 5000
+  },
+  thumbSize: {
+    type: [Number, String],
+    default: '20',
+  }
+})
 
-// 定義選取範圍最大與最小值
+// 單輸入範圍選取 - 定義選取值
+const selectedCurrentValue  = ref(114);
+
+// 單輸入範圍選取 - 計算選取範圍右側空間
+const unSelectSpaceRatio = computed(() => {
+  return 100 - (selectedCurrentValue .value / props.sliderMaxVal) * 100 + "%"
+})
+
+// 雙輸入範圍選取 - 定義選取範圍最大與最小值
 const selectedMinValue  = ref(114);
 const selectedMaxValue  = ref(514);
 
-
-// 計算選取範圍中的最大值與最小值
+// 雙輸入範圍選取 - 計算選取範圍中的最大值與最小值
 const rangeMinValue  = computed(() => Math.min(selectedMinValue .value, selectedMaxValue .value));
 const rangeMaxValue  = computed(() => Math.max(selectedMinValue .value, selectedMaxValue .value));
 
-// 計算選取範圍左右兩側空間
+// 雙輸入範圍選取 - 計算選取範圍左右兩側空間
 const leftSpaceRatio = computed(() => {
-  return (rangeMinValue .value / sliderMaxVal.value) * 100 + .2 + "%"
+  return (rangeMinValue .value / (props.sliderMaxVal)) * 100 + "%"
 })
 const rightSpaceRatio = computed(() => {
-  return 100 - (rangeMaxValue .value / sliderMaxVal.value) * 100 + .2 + "%"
+  return 100 - (rangeMaxValue .value / props.sliderMaxVal) * 100 + "%"
 })
 
+// 監視 props.thumbSize 屬性變更 thumb 大小的 CSS 原生變數的值
+watch(() => props.thumbSize, (newThumbSize) => {
+  document.documentElement.style.setProperty('--thumbDiameter', `${newThumbSize}px`);
+  const thumbWidth = getComputedStyle(document.documentElement).getPropertyValue('--thumbDiameter');
+  console.log(thumbWidth);
+}, { immediate: true });
 
 </script>
 
 <template>
-  <div class="multi-range">
-    <div class="slide-track" :style="{'left': leftSpaceRatio, 'right': rightSpaceRatio }">
-      <div class="tooltip">{{ `${rangeMinValue} - ${rangeMaxValue}` }}</div>
+    <!-- Input - single-slider -->
+    <div class="single-slider">
+        <div class="slide-track-container">
+          <div class="slide-track" :style="{'left': 0, 'right': unSelectSpaceRatio }"></div>
+        </div>
+        <input
+            type="range"
+            :min="props.sliderMinVal"
+            :max="props.sliderMaxVal"
+            v-model="selectedCurrentValue"
+        />
     </div>
-    <input
-        type="range"
-        :min="sliderMinVal"
-        :max="sliderMaxVal"
-        v-model="selectedMinValue"
-    />
-    <input
-        type="range"
-        :min="sliderMinVal"
-        :max="sliderMaxVal"
-        v-model="selectedMaxValue "
-    />
-<!--    <div class="tooltip min-tooltip" :style="{'left': leftSpaceRatio}">{{ rangeMinValue }}</div>-->
-<!--    <div class="tooltip max-tooltip" :style="{'right': rightSpaceRatio}">{{ rangeMaxValue }}</div>-->
-  </div>
-  <div>{{ rangeMinValue }}-{{ rangeMaxValue }}</div>
+    <p> single: {{selectedCurrentValue}}</p>
 
-  <!-- Input Boxes -->
-  <div class="input-box">
+
+    <!-- Input - double-slider -->
+    <div class="double-slider">
+      <div class="slide-track-container">
+        <div class="slide-track" :style="{'left': leftSpaceRatio, 'right': rightSpaceRatio }"></div>
+      </div>
+      <input
+          type="range"
+          :min="props.sliderMinVal"
+          :max="props.sliderMaxVal"
+          v-model="selectedMinValue"
+      />
+      <input
+          type="range"
+          :min="props.sliderMinVal"
+          :max="props.sliderMaxVal"
+          v-model="selectedMaxValue "
+      />
+    </div>
+    <div>{{ rangeMinValue }}-{{ rangeMaxValue }}</div>
+
+    <!-- Input Boxes -->
+    <div class="input-box">
     <div class="min-box">
       <div class="input-wrap">
         <span class="input-addon">$</span>
@@ -77,10 +121,13 @@ const rightSpaceRatio = computed(() => {
 
 
 
-<style scoped>
-
+<style>
+:root {
+  --thumbDiameter: 20px;
+}
 /*-- slider - 進度條底色 ---*/
-.multi-range {
+.single-slider,
+.double-slider {
   position: relative;
   width: 100%;
   height: 10px;
@@ -89,18 +136,26 @@ const rightSpaceRatio = computed(() => {
   border-radius: 30px;
 }
 
-/*-- slider - 選取範圍樣式 ---*/
-.multi-range .slide-track {
+.single-slider .slide-track-container,
+.double-slider .slide-track-container {
   height: 100%;
-  position: absolute;
-  background-color: #fe696a;
-}
-.multi-range .slide-track::before {
+  border-radius: 30px;
+  overflow: hidden;
   position: relative;
 }
 
-/*-- slider - 改寫原生進度條樣式 ---*/
-.multi-range input[type="range"] {
+/*-- slider - 選取範圍樣式 ---*/
+.single-slider .slide-track,
+.double-slider .slide-track {
+  height: 100%;
+  position: absolute;
+  background-color: #F00;
+  transform: translateX(0%);
+}
+
+/*-- slider - 隱藏原生進度條樣式 ---*/
+.single-slider input[type="range"],
+.double-slider input[type="range"] {
   position: absolute;
   height: 100%;
   width: 100%;
@@ -113,44 +168,68 @@ const rightSpaceRatio = computed(() => {
   margin: 0;
 }
 
+/*-- slider - 改寫原生進度 thumb 條樣式 ---*/
 input[type="range"]::-webkit-slider-thumb {
-  height: 20px;
-  width: 20px;
-  border-radius: 50%;
-  border: 3px solid #F00;
-  background: rgba(255,255,255,.80);
+  height: var(--thumbDiameter);
+  width: var(--thumbDiameter);
+  border-radius: 999px;
+  border: 1px solid #F00;
+  background: rgba(255,255,255);
   pointer-events: auto;
   appearance: none;
   cursor: pointer;
   box-shadow: 0 .125rem .5625rem -0.125rem rgba(0, 0, 0, .25);
+  transition: border-width 0.08s;
+}
+input[type="range"]::-webkit-slider-thumb:hover {
+  border-width: 4px;
 }
 
+/*-- slider - 自訂 thumb ---*/
+/*.slider-thumb{*/
+/*  height: var(--thumbDiameter);*/
+/*  width: var(--thumbDiameter);*/
+/*  border: 1px solid #F00;*/
+/*  background: rgba(255,255,255);*/
+/*  pointer-events: none;*/
+/*  appearance: none;*/
+/*  cursor: pointer;*/
+/*  box-shadow: 0 .125rem .5625rem -0.125rem rgba(0, 0, 0, .25);*/
+/*  transition: border-width 0.08s;*/
+/*  top:50%;*/
+/*  position: absolute;*/
+/*}*/
+/*.slider-thumb.min-slider-thumb {*/
+/*  transform: translateX(-50%) translateY(-50%);*/
+/*}*/
+/*.slider-thumb.max-slider-thumb {*/
+/*  transform: translateX(50%);*/
+/*}*/
+
 /*-- slider - 提示標籤樣式 ---*/
-.tooltip {
-  padding: .25rem .5rem;
-  border: 1px solid #ddd;
-  background-color: black;
-  color: #fff;
-  font-size: .75rem;
-  line-height: 1.2;
-  border-radius: .25rem;
-  bottom: 120%;
-  display: block;
-  position: absolute;
-  text-align: center;
-  white-space: nowrap;
-  left: 50%;
-  transform: translateX(-50%) translateY(-50%);
-  z-index: 5;
-}
+/*.tooltip {*/
+/*  padding: .25rem .5rem;*/
+/*  border: 1px solid #ddd;*/
+/*  background-color: black;*/
+/*  color: #fff;*/
+/*  font-size: .75rem;*/
+/*  line-height: 1.2;*/
+/*  border-radius: .25rem;*/
+/*  bottom: 120%;*/
+/*  display: block;*/
+/*  position: absolute;*/
+/*  text-align: center;*/
+/*  white-space: nowrap;*/
+/*}*/
 /*.min-tooltip {*/
 /*  !*left: 50%;*!*/
 /*  left: 0;*/
-/*  */
+/*  z-index: 5;*/
 /*}*/
 /*.max-tooltip {*/
 /*  !*right: 50%;*!*/
-/*  transform: translateX(50%) translateY(-100%);*/
+/*  right: 0;*/
+/*  !*transform: translateX(50%) translateY(-100%);*!*/
 /*  z-index: 5;*/
 /*}*/
 

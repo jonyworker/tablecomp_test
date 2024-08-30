@@ -485,6 +485,8 @@ const isRadioPicked = ref("");
     <!-- Range -->
 <!--    <Range></Range>-->
   <RangeNew></RangeNew>
+
+
 </template>
 
 <style scoped>
@@ -515,4 +517,8 @@ const isRadioPicked = ref("");
     overflow: hidden;
     text-overflow: ellipsis;
 } */
+:root {
+  --thumbWidth: 20px;
+  --thumbhright: 20px;
+}
 </style>
