@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "tablecomp_test": "file:",
     "vue": "^3.4.31"
   },
   "devDependencies": {

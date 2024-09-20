@@ -2,12 +2,7 @@
 import { ref, reactive } from "vue";
 import JTable from "./components/Table/Table.vue";
 // import RTable from "./components/TableNew.vue";
-// import Rating from "./components/Rating.vue";
-// import Accordion from "./components/Accordion/Accordion.vue";
-// import RadioButton from "./components/Radiobutton/Radiobutton.vue";
-import Range from "./components/Range/Range.vue";
-import RangeNew from "./components/Range/RangeNew.vue";
-// import Divider from "./components/Divider/Divider.vue";
+
 const columnHeadData = [
     { key: "id", label: "ID", sort: true },
     { key: "name", label: "NAME", sort: true },
@@ -206,6 +201,22 @@ const radioList = [
     },
 ];
 const isRadioPicked = ref("");
+const { add, toasts } = useToast();
+
+const showSuccess = () => {
+    add({
+        message: "Success Message",
+        themeColor: "success",
+        life: 3000,
+    });
+};
+const showfuck = () => {
+    add({
+        message: "fuck",
+        themeColor: "error",
+        life: 3000,
+    });
+};
 </script>
 
 <template>
@@ -476,17 +487,6 @@ const isRadioPicked = ref("");
         :label="item.label"
         v-model="isRadioPicked"
     ></RadioButton> -->
-
-    <!-- Divider -->
-    <!-- <div style="height: 200px">
-        <Divider></Divider>
-    </div> -->
-
-    <!-- Range -->
-<!--    <Range></Range>-->
-  <RangeNew></RangeNew>
-
-
 </template>
 
 <style scoped>
@@ -518,7 +518,7 @@ const isRadioPicked = ref("");
     text-overflow: ellipsis;
 } */
 :root {
-  --thumbWidth: 20px;
-  --thumbhright: 20px;
+    --thumbWidth: 20px;
+    --thumbhright: 20px;
 }
 </style>

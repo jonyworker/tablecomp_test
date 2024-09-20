@@ -1,0 +1,2562 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>新漢AOI&AI中介系統</title>
+        <!-- css link -->
+        <link rel="stylesheet" href="../css/all.css" />
+        <!-- google font -->
+        <!-- Noto Sans TC 繁體中文 -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100;300;400;500;700;900&display=swap"
+            rel="stylesheet"
+        />
+
+        <!-- Material icon (out-line) 因所外網的關係改本地執行 -->
+        <!-- <link href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Round"
+    rel="stylesheet"> -->
+        <!-- <link rel="stylesheet" href="../"> -->
+        <!-- Material icon (symbols) 因所外網的關係改本地執行 -->
+        <!-- <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" /> -->
+
+        <!-- 外部工具 - Vue.js 2 -->
+        <script src="../js/vendors-vue2.js"></script>
+        <!-- 外部工具 - axios -->
+        <script src="../js/vendors-axios.js"></script>
+        <!-- 外部工具 - bootstrap -->
+        <script src="../js/vendors-bootstrap.bundle.min.js"></script>
+        <!-- 外部工具 - Echart -->
+        <script src="../js/vendors-echarts.js"></script>
+
+        <!-- <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script> -->
+
+        <style>
+            .dropdownModel {
+                border: 1px solid #ccc;
+                position: absolute;
+                width: 100%;
+                /* 你可以根據需要調整這些值 */
+                max-height: 150px;
+                /* 限制最大高度 */
+                overflow-y: auto;
+                /* 添加滾動條 */
+                background-color: white;
+                z-index: 1;
+                /* 確保在其他元素之上 */
+            }
+
+            .dropdownModel-item {
+                padding: 10px;
+                cursor: pointer;
+            }
+
+            .dropdownModel-item:hover {
+                background-color: #eee;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="app">
+            <!-- 彈跳視窗 - 資料加載中(d-block顯示) -->
+            <section class="popup-section" v-if="isDownloading">
+                <div class="popup-overlay">
+                    <div class="popup-content w-30">
+                        <h4>請稍待片刻，即將開始下載～</h4>
+                        <p class="mb-24">
+                            我們已收到您的需求，資料準備完畢後即開始下載
+                        </p>
+                        <div class="loader-content mb-8">
+                            <div class="blob-1"></div>
+                            <div class="blob-2"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TOP-BAR Section -->
+            <header class="header-section">
+                <div class="container-slef">
+                    <div class="header-content">
+                        <!-- logo-set -->
+                        <a
+                            class="logo-set"
+                            href="/"
+                            alt="click to main page"
+                            title="Visit the main page"
+                            v-on:click="clearSessionStorage()"
+                        >
+                            <h1 style="width: 120px">
+                                <img
+                                    src="../image/nexcom_logo_single.png"
+                                    alt="logo"
+                                />
+                            </h1>
+                            <p class="">新漢AOI&AI中介系統</p>
+                            <!-- <p class="">新漢AOI&AI中介系統， now localDomain is:{{localDomain}} remoteDomain is:{{remoteDomain}}</p> -->
+                        </a>
+
+                        <!-- tool-bar -->
+                        <ul class="toolbar-list">
+                            <!-- 1st  -->
+
+                            <li class="toolbar-item dropdown">
+                                <button
+                                    class="btn-icon btn-header dropdown-toggle"
+                                    type="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                    style="width: 40px; height: 40px"
+                                >
+                                    <span class="material-icons-outlined">
+                                        account_circle
+                                    </span>
+                                </button>
+
+                                <div class="dropdown-menu py-0">
+                                    <div
+                                        class="card card-column"
+                                        style="
+                                            border: 1px solid
+                                                rgba(0, 0, 0, 0.2509803922);
+                                        "
+                                    >
+                                        <div
+                                            class="card-head"
+                                            style="padding: 16px 16px"
+                                        >
+                                            <div class="title-set-col">
+                                                <small
+                                                    >{{currentUser.department}}</small
+                                                >
+                                                <small class="mb-0"
+                                                    >{{currentUser.empName}}</small
+                                                >
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="card-body"
+                                            style="padding: 6px 16px"
+                                        >
+                                            <a
+                                                href="/logout"
+                                                class="w-100 d-flex align-items-center"
+                                                style="gap: 8px"
+                                            >
+                                                <div class="icon-wrap m-0">
+                                                    <span
+                                                        class="material-icons-outlined"
+                                                    >
+                                                        logout
+                                                    </span>
+                                                </div>
+                                                <p
+                                                    style="
+                                                        font-size: 14px;
+                                                        margin-bottom: 0;
+                                                    "
+                                                >
+                                                    登出
+                                                </p>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <!-- 2nd (暫時隱藏，待操作手冊完成時加上) -->
+                            <li class="toolbar-item">
+                                <a
+                                    href="../file/新漢AOI設備影像檢測AI優化系統_管理平台操作手冊.pdf"
+                                    title="下載使用手冊"
+                                >
+                                    <div class="icon-wrap">
+                                        <span class="material-icons-outlined">
+                                            help_outline
+                                        </span>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+
+            <main class="d-flex">
+                <!-- 側邊主選單 -->
+                <section class="main-nav-section">
+                    <div class="container-self">
+                        <div class="main-nav-content">
+                            <nav class="main-nav">
+                                <ul>
+                                    <!-- 被選擇時需加 class:active -->
+                                    <!-- 情報平台 (顯示權限:admin and normal user )  -->
+                                    <li class="active">
+                                        <a
+                                            href="/"
+                                            v-on:click="clearSessionStorage()"
+                                        >
+                                            <span
+                                                class="material-icons-outlined"
+                                            >
+                                                dashboard
+                                            </span>
+                                            情報平台
+                                        </a>
+                                    </li>
+                                    <!-- 機板搜尋 (顯示權限:admin and normal user )  -->
+                                    <li class="">
+                                        <a
+                                            href="/snSearch"
+                                            v-on:click="clearSessionStorage()"
+                                        >
+                                            <span
+                                                class="material-symbols-outlined"
+                                            >
+                                                frame_inspect
+                                            </span>
+                                            機板搜尋
+                                        </a>
+                                    </li>
+                                    <!-- 權限管理 (顯示權限:admin only) -->
+                                    <li
+                                        class=""
+                                        v-if="currentUser.roles?.includes('ADMIN')"
+                                    >
+                                        <a href="/userManagement">
+                                            <span
+                                                class="material-symbols-outlined"
+                                            >
+                                                badge
+                                            </span>
+                                            用戶管理
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 變動區塊 -->
+                <div class="main-info-section">
+                    <!-- 第一階段搜尋列 -->
+                    <section class="filter-section px-24">
+                        <div class="containe-fluid">
+                            <div class="filter-content">
+                                <ul class="input-list">
+                                    <!-- 選擇搜尋方式(寬度條件：預設 w-30 工單 w-30 機種 w15)-->
+                                    <li
+                                        :class="selectSearchType === '機種名稱'? classesByCModel:classesByLotNo"
+                                    >
+                                        <div
+                                            class="input-wrap input-icon-right icon-select"
+                                        >
+                                            <select
+                                                name="add-greenhouse-crop-name"
+                                                id="add-greenhouse-crop-name"
+                                                required=""
+                                                v-model="selectSearchType"
+                                            >
+                                                <option value="">
+                                                    請選擇搜尋方式
+                                                </option>
+                                                <option value="機種名稱">
+                                                    依照機種名稱
+                                                </option>
+                                                <option value="工單號">
+                                                    依照工單號
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </li>
+                                    <!-- 選擇廠區 (顯示條件：預設d-none 「機種名稱」被選擇時 d-block w-15)-->
+                                    <li
+                                        class="select-item w-15"
+                                        v-show="selectSearchType === '機種名稱'"
+                                    >
+                                        <div
+                                            class="input-wrap input-icon-right icon-select"
+                                        >
+                                            <select
+                                                name="add-greenhouse-crop-name"
+                                                id="add-greenhouse-crop-name"
+                                                required=""
+                                                v-model="remoteDomain"
+                                            >
+                                                <option value="">
+                                                    請選擇廠區
+                                                </option>
+                                                <option value="10.30.100.17">
+                                                    三民廠
+                                                </option>
+                                                <option value="10.90.1.164">
+                                                    華亞廠
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </li>
+                                    <!-- 搜尋input -->
+                                    <li class="input-item w-60">
+                                        <div
+                                            class="input-wrap input-icon-left icon-search"
+                                        >
+                                            <input
+                                                v-model="searchQuery"
+                                                type="text"
+                                                placeholder="請輸入工單號或機種編號"
+                                                @focus="showDropdown = true"
+                                                @blur="showDropdown = false"
+                                            />
+
+                                            <!-- 模糊查詢下拉選單 -->
+                                            <div
+                                                v-if="showDropdown && models.length > 0"
+                                                class="dropdownModel"
+                                            >
+                                                <div
+                                                    v-for="(model, index) in models"
+                                                    :key="index"
+                                                    @mousedown.prevent="selectModel(model)"
+                                                    class="dropdownModel-item"
+                                                >
+                                                    {{ model }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <!-- 搜尋按鈕 -->
+                                    <li class="w-10">
+                                        <button
+                                            class="btn btn-outline btn-lg w-100"
+                                            @click="handleSubmit"
+                                        >
+                                            搜尋
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- 第二階段搜尋列 (TAB選單及附屬篩選條件) -->
+                    <section class="subnav-bar-section">
+                        <div class="containe-fluid">
+                            <div class="subnav-bar-content">
+                                <!-- sub-nav 選單 -->
+                                <ul class="sub-nav-list mr-40">
+                                    <li
+                                        class="sub-nav-item"
+                                        :class="{'active': selectTab == 'displayNGBoardList'}"
+                                    >
+                                        <button
+                                            v-on:click="selectTab = 'displayNGBoardList'"
+                                        >
+                                            NG板紀錄
+                                        </button>
+                                    </li>
+                                    <li
+                                        class="sub-nav-item"
+                                        :class="{'active': selectTab == 'displayDashboard'}"
+                                    >
+                                        <button
+                                            v-on:click="selectTab = 'displayDashboard'"
+                                        >
+                                            情報平台
+                                        </button>
+                                    </li>
+                                </ul>
+                                <!-- 變動搜尋列 - 搜尋機種顯示 -->
+                                <!-- (顯示條件：預設d-none 「機種名稱」條件被選擇並送出時 show) -->
+                                <ul
+                                    v-show="showCModelSubSearchBar"
+                                    class="input-list"
+                                >
+                                    <li
+                                        class="select-item ml-auto"
+                                        :class="{'readonly': isNotSearched}"
+                                    >
+                                        <div
+                                            class="input-wrap input-icon-right icon-select"
+                                        >
+                                            <select
+                                                name="add-greenhouse-crop-name"
+                                                id="add-greenhouse-crop-name"
+                                                required=""
+                                                v-model="lotNoSelect"
+                                                :disabled="isNotSearched"
+                                            >
+                                                <!-- TODO: 暫用index 正式撈資料時用:key="item.createdDate" -->
+                                                <option
+                                                    v-for="(item,index) in lotNoList"
+                                                    :key="index"
+                                                    :value="item"
+                                                >
+                                                    {{item}}
+                                                </option>
+                                                <option value="">
+                                                    全部工單統計資料（讀取時間長）
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </li>
+                                </ul>
+
+                                <!-- 變動搜尋列 - 搜尋工單顯示 -->
+                                <!-- (顯示條件：預設d-none 「工單號」條件被選擇並送出時 show) -->
+                                <ul
+                                    v-show="showLotNoSubSearchBar"
+                                    class="input-list"
+                                >
+                                    <!-- 日期區間 - 起始日期(搜尋工單時顯示) -->
+                                    <li
+                                        class="input-item w-40"
+                                        :class="{'readonly': isNotSearched}"
+                                    >
+                                        <div
+                                            class="input-wrap input-icon-right text-start-date icon-calendar"
+                                        >
+                                            <input
+                                                type="text"
+                                                onfocus="(this.type='date')"
+                                                onblur="(this.type='text')"
+                                                placeholder="請輸入起始日期"
+                                                v-model="sortStarDate"
+                                                style="padding-left: 63px"
+                                                :disabled="isNotSearched"
+                                            />
+                                        </div>
+                                    </li>
+                                    <!-- 日期區間 - 結束日期(搜尋工單時顯示) -->
+                                    <li
+                                        class="input-item w-40"
+                                        :class="{'readonly': isNotSearched}"
+                                    >
+                                        <div
+                                            class="input-wrap input-icon-right text-end-date icon-calendar"
+                                        >
+                                            <input
+                                                type="text"
+                                                onfocus="(this.type='date')"
+                                                onblur="(this.type='text')"
+                                                placeholder="請輸入結束日期"
+                                                v-model="sortEndDate"
+                                                style="padding-left: 65px"
+                                                :disabled="isNotSearched"
+                                            />
+                                        </div>
+                                    </li>
+                                    <!-- 下拉 - 正反面(搜尋機種時顯示) -->
+                                    <li
+                                        class="select-item w-20"
+                                        :class="{'readonly': isNotSearched}"
+                                    >
+                                        <div
+                                            class="input-wrap input-icon-right icon-select"
+                                        >
+                                            <select
+                                                name="add-greenhouse-crop-name"
+                                                id="add-greenhouse-crop-name"
+                                                required=""
+                                                v-model="sortTopBtm"
+                                                :disabled="isNotSearched"
+                                            >
+                                                <option value="">
+                                                    請選擇正反面
+                                                </option>
+                                                <!-- <option value="">正反兩面</option> -->
+                                                <option value="T">正面</option>
+                                                <option value="B">反面</option>
+                                            </select>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Dash - TAB:情報平台 / CONTENT:尚無資料提示(登入時顯示) -->
+                    <section
+                        class="main-board-section"
+                        v-show="showNoSearchResult === false && showNoData === true"
+                    >
+                        <div
+                            class="main-board-content d-flex align-items-center justify-content-center h-100"
+                        >
+                            <div
+                                class="container-fluid"
+                                style="text-align: center"
+                            >
+                                <!-- No result section -->
+                                <section class="no-result-section">
+                                    <div class="no-result-emoji">(⸝⸝•̀֊•́⸝⸝)</div>
+                                    <h2 class="title mb-16">
+                                        還沒有資料可以顯示喔!
+                                    </h2>
+                                    <p class="subtitle">
+                                        請在上方搜尋區塊，依照您的需求鍵入條件搜尋，謝謝～
+                                    </p>
+                                </section>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Dash - TAB:情報平台 or NG板紀錄 / CONTENT:搜尋條件不符時提示 -->
+                    <section
+                        class="main-board-section"
+                        v-show="showNoSearchResult"
+                    >
+                        <div
+                            class="main-board-content d-flex align-items-center justify-content-center h-100"
+                        >
+                            <div
+                                class="container-fluid"
+                                style="text-align: center"
+                            >
+                                <!-- No result section -->
+                                <section class="no-result-section">
+                                    <div class="no-result-emoji">m(>_<)m</div>
+                                    <h2 class="title mb-16">
+                                        您輸入的搜尋條件，沒有資料顯示喔!
+                                    </h2>
+                                    <p class="subtitle">
+                                        請檢查或重新輸入搜尋條件再次搜尋，謝謝～
+                                    </p>
+                                </section>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Dash - TAB:情報平台 / CONTENT:charts等圖表-->
+                    <section
+                        class="main-board-section"
+                        v-show="selectTab == 'displayDashboard' && showNoSearchResult === false && showNoData === false && searchResult !== ''"
+                        style="position: relative"
+                    >
+                        <!-- 彈跳視窗 - 資料加載中(d-block顯示) -->
+                        <section class="popup-section" v-show="showDataUpdate">
+                            <div class="popup-overlay">
+                                <div class="popup-content w-30">
+                                    <h4>資料加載，請稍候～</h4>
+                                    <p class="mb-24">
+                                        我們已收到您的需求，資料準備中
+                                    </p>
+                                    <div class="loader-content mb-8">
+                                        <div class="blob-1"></div>
+                                        <div class="blob-2"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <div class="main-board-content">
+                            <div class="container-fluid">
+                                <!-- 1st row 工單總覽 -->
+                                <div class="row mb-24">
+                                    <!-- NG機板總數量 -->
+                                    <div class="col">
+                                        <div class="card-normal card-column">
+                                            <div class="card-head">
+                                                <h2>NG 機板張數總計</h2>
+                                            </div>
+                                            <div class="card-body">
+                                                <small
+                                                    >本記錄中累計不良機板總數</small
+                                                >
+                                                <p class="amount mt-auto">
+                                                    {{NGBoardCount}}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- AOI判讀 NG總數 -->
+                                    <div class="col">
+                                        <div class="card-normal card-column">
+                                            <div class="card-head">
+                                                <h2>AOI 判讀 NG 總計</h2>
+                                            </div>
+                                            <div class="card-body">
+                                                <small
+                                                    >AOI判讀累計不良元件總數</small
+                                                >
+                                                <p class="amount mt-auto">
+                                                    {{filAoiTotalNGCount}}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- AI判讀 Pass & NG 總數 -->
+                                    <div class="col">
+                                        <div
+                                            class="card-normal card-column p-0"
+                                        >
+                                            <!-- AI判讀 Pass -->
+                                            <div
+                                                class="d-flex flex-column h-50 py-16 px-16"
+                                                style="
+                                                    border-bottom: 2px dashed
+                                                        #dcdcdc;
+                                                "
+                                            >
+                                                <div class="card-head">
+                                                    <h2>
+                                                        AI 判讀 NG 總計(50以上)
+                                                    </h2>
+                                                </div>
+                                                <div class="card-body h-100">
+                                                    <!-- <small>AI判讀累計不良元件總數</small> -->
+                                                    <p class="amount mt-auto">
+                                                        {{filAiTotalNGCount}}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <!-- AI判讀 NG總數 -->
+                                            <div
+                                                class="d-flex flex-column h-50 py-16 px-16"
+                                            >
+                                                <div class="card-head">
+                                                    <h2>
+                                                        AI 判讀 PASS
+                                                        總計(50以上)
+                                                    </h2>
+                                                </div>
+                                                <div class="card-body h-100">
+                                                    <!-- <small>AI 檢測通過的元件總數</small> -->
+                                                    <p class="amount mt-auto">
+                                                        {{filAiTotalPASSCount}}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- AI訓練不足總數 && AI訓練次數為0數-->
+                                    <div class="col">
+                                        <div
+                                            class="card-normal card-column p-0"
+                                        >
+                                            <div
+                                                class="d-flex flex-column h-50 py-16 px-20"
+                                                style="
+                                                    border-bottom: 2px dashed
+                                                        #dcdcdc;
+                                                "
+                                            >
+                                                <div class="card-head">
+                                                    <h2>
+                                                        AI 訓練不足總計(未達50)
+                                                    </h2>
+                                                </div>
+                                                <div class="card-body">
+                                                    <p class="amount mt-auto">
+                                                        {{filAiTotalMissingCount}}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div
+                                                class="d-flex flex-column h-50 py-16 px-20"
+                                            >
+                                                <div class="card-head">
+                                                    <h2>AI 無法判定總計</h2>
+                                                </div>
+                                                <div class="card-body">
+                                                    <small>包含特殊案例</small>
+                                                    <p class="amount mt-auto">
+                                                        {{filAiTotalMissingZEROCount}}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- AI訓練不足 NG & PASS 總計 -->
+                                    <div class="col">
+                                        <div
+                                            class="card-normal card-column p-0"
+                                        >
+                                            <div
+                                                class="d-flex flex-column h-50 py-16 px-20"
+                                                style="
+                                                    border-bottom: 2px dashed
+                                                        #dcdcdc;
+                                                "
+                                            >
+                                                <div class="card-head">
+                                                    <h2>AI 訓練不足 NG 總計</h2>
+                                                </div>
+                                                <div class="card-body">
+                                                    <p class="amount mt-auto">
+                                                        {{filAiTotalMissingNGCount}}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div
+                                                class="d-flex flex-column h-50 py-16 px-20"
+                                            >
+                                                <div class="card-head">
+                                                    <h2>
+                                                        AI 訓練不足 PASS 總計
+                                                    </h2>
+                                                </div>
+                                                <div class="card-body">
+                                                    <p class="amount mt-auto">
+                                                        {{filAiTotalMissingPASSCount}}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- OP判讀 NG & PASS 總計 -->
+                                    <div class="col">
+                                        <div
+                                            class="card-normal card-column p-0"
+                                        >
+                                            <div
+                                                class="d-flex flex-column h-50 py-16 px-20"
+                                                style="
+                                                    border-bottom: 2px dashed
+                                                        #dcdcdc;
+                                                "
+                                            >
+                                                <div class="card-head">
+                                                    <h2>OP 判讀 NG 總計</h2>
+                                                </div>
+                                                <div class="card-body">
+                                                    <p class="amount mt-auto">
+                                                        {{filOpTotalNGCount}}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div
+                                                class="d-flex flex-column h-50 py-16 px-20"
+                                            >
+                                                <div class="card-head">
+                                                    <h2>OP 判讀 PASS 總計</h2>
+                                                </div>
+                                                <div class="card-body">
+                                                    <p class="amount mt-auto">
+                                                        {{filOpTotalPASSCount}}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- OP判讀 NG總數(2023-11-29應客戶需求取消顯示) -->
+                                    <!-- <div class="col">
+                  <div class="card-normal card-column">
+                    <div class="card-head">
+                      <h2>OP判讀 NG總數</h2>
+                    </div>
+                    <div class="card-body">
+                      <small>人工判讀累計不良元件總數</small>
+                      <p class="amount">{{filOpTotalNGCount}}</p>
+                    </div>
+                  </div>
+                </div> -->
+                                    <!-- 三方判讀NG最高元件 -->
+                                    <div class="col">
+                                        <div class="card-normal card-column">
+                                            <div class="card-head">
+                                                <h2>三方判讀皆 NG 最多元件</h2>
+                                            </div>
+                                            <div class="card-body">
+                                                <small
+                                                    >AOI & AI & OP 皆判 NG
+                                                    且累積次數最高元件位置</small
+                                                >
+                                                <p class="amount mt-auto">
+                                                    {{topAoiAiPoNGComp}}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 2nd row 數量總計 -->
+                                <div class="row">
+                                    <!-- BAR CHART - 五大元件缺失及數量 -->
+                                    <div class="col-6">
+                                        <div class="card card-column">
+                                            <!-- card-head -->
+                                            <div class="card-head">
+                                                <div class="title-set-row">
+                                                    <h2>元件五大缺失及數量</h2>
+                                                    <small
+                                                        >顯示前五名缺失的原因以及數量</small
+                                                    >
+                                                </div>
+                                            </div>
+                                            <!-- card-body -->
+                                            <div class="card-body-fluid">
+                                                <!-- 为 ECharts 准备一个定义了宽高的 DOM -->
+                                                <div
+                                                    id="bar-chart"
+                                                    class="echart-container"
+                                                ></div>
+                                            </div>
+                                            <!-- card-footer 新增及最後修改時間 -->
+                                            <div class="card-footer"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- PIE CHART - 五大元件缺失及數量 -->
+                                    <div class="col-6">
+                                        <div class="card card-column">
+                                            <!-- card-head -->
+                                            <div class="card-head">
+                                                <div class="title-set-row">
+                                                    <h2>元件五大缺失及比率</h2>
+                                                    <small
+                                                        >顯示前五名缺失的原因以及比率</small
+                                                    >
+                                                </div>
+                                            </div>
+                                            <!-- card-body -->
+                                            <div class="card-body-fluid">
+                                                <!-- 为 ECharts 准备一个定义了宽高的 DOM -->
+                                                <div
+                                                    id="pie-chart"
+                                                    class="echart-container"
+                                                ></div>
+                                            </div>
+                                            <!-- card-footer 新增及最後修改時間 -->
+                                            <div class="card-footer"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Dash - TAB:NG版紀錄 / CONTENT:不良機板列表 -->
+                    <section
+                        class="main-board-section"
+                        v-show="selectTab == 'displayNGBoardList' && showNoSearchResult === false && showNoData === false && searchResult !== ''"
+                    >
+                        <div class="main-board-content">
+                            <div class="container-fluid">
+                                <!-- # 不良機板列表 -->
+                                <div class="col-12">
+                                    <div
+                                        class="card style-tableList card-column"
+                                    >
+                                        <!-- card-head 標題及篩選列 -->
+                                        <div class="card-head">
+                                            <!-- 標題組 -->
+                                            <div class="title-set-row">
+                                                <h2>不良機板列表</h2>
+                                                <small
+                                                    >顯示AOI判讀NG機板列表</small
+                                                >
+                                            </div>
+                                            <!-- 篩選欄位 -->
+                                            <div
+                                                class="input-item w-60 ml-auto mr-8"
+                                            >
+                                                <div
+                                                    class="input-wrap input-icon-left icon-filter"
+                                                >
+                                                    <input
+                                                        type="text"
+                                                        placeholder="請輸入機板序號篩選或由選擇下方列表查詢機板詳細資訊"
+                                                        v-model="boardSnKeyword"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <!-- 下載報表按鈕 -->
+                                            <a
+                                                v-if="selectSearchType === '機種名稱' && lotNoSelect !== ''|| selectSearchType === '工單號'"
+                                                class="btn btn-icon download"
+                                                @click="downloadExcelFile()"
+                                            >
+                                                <span
+                                                    class="material-symbols-outlined"
+                                                >
+                                                    download
+                                                </span>
+                                            </a>
+                                        </div>
+                                        <!-- card-body 卡片表格 -->
+                                        <div
+                                            class="card-body-fluid"
+                                            style="flex: 1 1 500px"
+                                        >
+                                            <div class="table-title">
+                                                <p style="width: 25%">
+                                                    機板序號
+                                                </p>
+                                                <p style="width: 24%">
+                                                    機種編號
+                                                </p>
+                                                <p
+                                                    style="width: 24%"
+                                                    v-show="selectSearchType == '機種名稱'"
+                                                >
+                                                    所屬工單
+                                                </p>
+                                                <p style="width: 14%">正反面</p>
+                                                <p style="width: 22%">
+                                                    檢測時間
+                                                </p>
+                                                <p style="width: 15%">
+                                                    詳細資訊
+                                                </p>
+                                            </div>
+                                            <!-- 標題以下有滾輪捲動 -->
+                                            <div class="scroll-wrap scroll-bar">
+                                                <table class="table-list">
+                                                    <!-- 表格抬頭 -->
+                                                    <thead class="d-none">
+                                                        <tr>
+                                                            <th></th>
+                                                            <th
+                                                                scope="col"
+                                                                rowspan="1"
+                                                                colspan="1"
+                                                            >
+                                                                機板序號
+                                                            </th>
+                                                            <th
+                                                                scope="col"
+                                                                rowspan="1"
+                                                                colspan="1"
+                                                            >
+                                                                機種編號
+                                                            </th>
+                                                            <th
+                                                                scope="col"
+                                                                rowspan="1"
+                                                                colspan="1"
+                                                                v-if="selectSearchType == '機種名稱'"
+                                                            >
+                                                                所屬工單
+                                                            </th>
+                                                            <th
+                                                                scope="col"
+                                                                rowspan="1"
+                                                                colspan="1"
+                                                            >
+                                                                正反面
+                                                            </th>
+                                                            <th
+                                                                scope="col"
+                                                                rowspan="1"
+                                                                colspan="1"
+                                                            >
+                                                                檢測時間
+                                                            </th>
+                                                            <th
+                                                                scope="col"
+                                                                rowspan="1"
+                                                                colspan="1"
+                                                            >
+                                                                詳細資訊
+                                                            </th>
+                                                            <th></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <!-- 表格資料 -->
+                                                    <tbody>
+                                                        <tr
+                                                            v-for="item in filSearchResult_L2"
+                                                            :key="item.boardId"
+                                                        >
+                                                            <td
+                                                                class="empty-td"
+                                                            ></td>
+                                                            <!-- 機板序號 -->
+                                                            <td
+                                                                style="
+                                                                    width: 25%;
+                                                                "
+                                                            >
+                                                                {{item.boardSn}}
+                                                            </td>
+                                                            <!-- 機種編號 -->
+                                                            <td
+                                                                style="
+                                                                    width: 24%;
+                                                                "
+                                                            >
+                                                                {{item.cModel}}
+                                                            </td>
+                                                            <!-- 所屬工單 -->
+                                                            <td
+                                                                style="
+                                                                    width: 24%;
+                                                                "
+                                                                v-show="selectSearchType == '機種名稱'"
+                                                            >
+                                                                {{item.lotNo}}
+                                                            </td>
+                                                            <!-- 正反面 -->
+                                                            <td
+                                                                style="
+                                                                    width: 14%;
+                                                                "
+                                                            >
+                                                                {{item.topBtm
+                                                                ==="T"? "正面" :
+                                                                "反面"}}
+                                                            </td>
+                                                            <!-- 檢測時間 -->
+                                                            <td
+                                                                style="
+                                                                    width: 22%;
+                                                                "
+                                                            >
+                                                                {{item.fDate.substring(0,
+                                                                19)}}
+                                                            </td>
+                                                            <!-- 詳細資訊 -->
+                                                            <td
+                                                                style="
+                                                                    width: 15%;
+                                                                "
+                                                            >
+                                                                <button
+                                                                    class="btn btn-small btn-outline w-50"
+                                                                    v-on:click.prevent="selectBoard(item)"
+                                                                >
+                                                                    檢視
+                                                                </button>
+                                                            </td>
+                                                            <td
+                                                                class="empty-td"
+                                                            ></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <!-- card-footer 新增及最後修改時間 -->
+                                        <div class="card-footer"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </main>
+        </div>
+
+        <!-- Vue用js -->
+        <script>
+            axios.defaults.withCredentials = true;
+
+            const vm = new Vue({
+                el: "#app",
+                data: {
+                    //=========================//
+                    // ===     控制區塊     === //
+                    //=========================//
+
+                    isDownloading: false, //控制顯示[excel下載]狀態頁
+                    showDataUpdate: false, //控制顯示[資料加載]狀態頁
+
+                    //控制顯示[搜尋無結果]及[無資料]狀態頁
+                    showNoSearchResult: false,
+                    showNoData: true,
+
+                    // 控制[第一階段搜尋列]搜尋欄位顯示
+                    classesByCModel: {
+                        "select-item": true,
+                        "w-15": true,
+                    },
+                    classesByLotNo: {
+                        "select-item": true,
+                        "w-30": true,
+                    },
+                    isNotSearched: true, //判斷「搜尋」按鈕還未被點擊
+                    isButtonDisabled: false, //偵測按鈕 disabled
+
+                    // 控制[第二階段搜尋列]依條件顯示
+                    showCModelSubSearchBar: false,
+                    showLotNoSubSearchBar: false,
+
+                    //============================//
+                    // ===     資料接收區塊     === //
+                    //============================//
+                    //-- 從DOM接收 --//
+                    localDomain: "", //預設顯示該廠domain
+                    remoteDomain: "", //與場別下拉選擇連動
+                    factoryName: "", //接收工廠名稱
+                    searchQuery: "", //接收「工單號或機種編號」資料
+                    selectSearchType: "", //接收「搜尋方式」資料
+                    selectTab: "displayNGBoardList", //接收TAB選單資料 控制下方div顯示資料
+                    sortStarDate: "", //接收工單起始時間(篩選用)
+                    sortEndDate: "", //接收工單結束時間(篩選用)
+                    sortTopBtm: "", //接收機板上下層(篩選用)
+                    boardSnKeyword: "", //接收機板編號(篩選用)
+                    lotNoSelect: "", //接收下拉工單編號(篩選用)
+                    boardSelect: {}, //接收選擇不良機板列表後的資料
+
+                    //-- 從後端接收 --//
+                    searchResult: [], //接收[依需求搜尋]回傳資料
+                    searchResultForList: [], //接收[分組排序後]回傳資料
+                    excelData: [], //內容與excel檔內內容一樣可解析與運算
+                    currentUser: {}, //目前使用者
+                    sessionId: "", //用來接收cookie中SESSION-ID
+
+                    //-- 計算後接收 --//
+                    lotNoList: [], //接收[API]-取得機種附屬的工單結果
+                    filBoardIdArr: [], //取得過濾後的機板的ID
+
+                    filBoardArrCount: 0, //[Dashboard] 計算NG基板總數量
+                    filAoiTotalNGCount: 0, //[Dashboard] AOI判讀總數
+
+                    filAiTotalNGCount: 0, //[Dashboard] AI判讀 NG 總數
+                    filAiTotalPASSCount: 0, //[Dashboard] AI判讀 PASS總數
+                    filAiTotalMissingCount: 0, //[Dashboard] AI 訓練不足總數
+                    filAiTotalMissingZEROCount: 0, //[Dashboard] AI 模型訓練次數為 0 數
+                    filAiTotalMissingNGCount: 0, //[Dashboard] AI 訓練不足NG總數
+                    filAiTotalMissingPASSCount: 0, //[Dashboard] AI 訓練不足PASS總數
+
+                    filOpTotalNGCount: 0, //[Dashboard] OP NG 判讀總數
+                    filOpTotalPASSCount: 0, //[Dashboard] OP PASS 判讀總數
+                    barChartErrorItem: [], //[Dashboard] bar chart 缺失名稱
+                    barChartErrorValue: [], //[Dashboard] bar chart 缺失數量
+                    pieChartErrorData: [], //[Dashboard] pie chart 缺失數量
+
+                    dashboardData: [], //用來儲存 dashboard 顯示用資料
+                    topAoiAiPoNGArr: [], //用來儲存AOI、AI、OP皆判讀NG的元件名稱
+                    topAoiAiPoNGComp: [], //用來儲存AOI、AI、OP皆判讀NG最多的元件名稱
+                    tempReceivedData: [],
+
+                    // 模糊查詢 data
+                    selectedModel: "",
+                    models: [],
+                    showDropdown: false,
+                    timeout: null,
+
+                    //==============================//
+                    // ===     chart資料區塊     === //
+                    //==============================//
+
+                    barInstance: null,
+                    pieInstance: null,
+
+                    option_bar: {
+                        color: [
+                            "#2563eb",
+                            "#93c5fd",
+                            "#3b82f6",
+                            "#1d4ed8",
+                            "#1e3a8a",
+                        ],
+                        //控制圖表大小
+                        grid: {
+                            left: "3%",
+                            right: "10%",
+                            bottom: "3%",
+                            top: "3%",
+                            containLabel: true,
+                        },
+
+                        // 圖例
+                        legend: {
+                            // data: ['銷量']
+                            show: false,
+                        },
+
+                        // X軸線
+                        xAxis: [
+                            {
+                                type: "value",
+                            },
+                        ],
+
+                        // Y軸線
+                        yAxis: [
+                            {
+                                type: "category",
+                                axisTick: {
+                                    show: false,
+                                },
+                                data: [].reverse(),
+                                axisLabel: {
+                                    // fontStyle:'italic',
+                                    fontWeight: "400",
+                                    fontSize: "14px",
+                                },
+                            },
+                        ],
+
+                        // 貼花圖案(無障礙for色盲)
+                        aria: {
+                            enabled: true,
+                            decal: {
+                                show: true,
+                                areaStyle: "radar",
+                            },
+                        },
+
+                        // 設置數據
+                        series: [
+                            {
+                                type: "bar",
+                                label: {
+                                    show: true,
+                                    position: "inside",
+                                },
+                                emphasis: {
+                                    focus: "series",
+                                },
+                                data: [].reverse(),
+                            },
+                        ],
+                    },
+
+                    // Pie chart - 配置文件
+                    option_pie: {
+                        color: [
+                            "#3b82f6",
+                            "#93c5fd",
+                            "#2563eb",
+                            "#A4C1FB",
+                            "#0E2B9B",
+                        ],
+                        tooltip: {
+                            trigger: "item",
+                        },
+
+                        legend: {
+                            orient: "vertical",
+                            left: "2.5%",
+                            top: "5%",
+                        },
+
+                        // 貼花圖案(無障礙for色盲)
+                        aria: {
+                            enabled: true,
+                            decal: {
+                                show: true,
+                                areaStyle: "radar",
+                            },
+                        },
+                        series: [
+                            {
+                                type: "pie",
+                                radius: "80%", //調整圓餅大小
+                                center: ["58%", "52%"], //調整圓餅位置 x y
+                                data: [
+                                    //圓餅資料
+                                    { value: 0, name: "" },
+                                    { value: 2657, name: "短路" },
+                                    { value: 1098, name: "移位" },
+                                    { value: 647, name: "空焊" },
+                                    { value: 544, name: "反向" },
+                                ],
+                                label: {
+                                    //調整圓餅資料標示
+                                    // show: false,
+                                    // position: 'center',
+                                    // position: 'inner',
+                                    // fontSize: 14
+                                },
+                                labelLine: {
+                                    //調整圓餅資料標示引導線
+                                    // show: false,
+                                },
+                                //滑鼠懸停時樣式
+                                emphasis: {
+                                    itemStyle: {
+                                        shadowBlur: 10,
+                                        shadowOffsetX: 0,
+                                        shadowColor: "rgba(0, 0, 0, 0.5)",
+                                    },
+                                },
+                            },
+                        ],
+                    },
+                },
+
+                methods: {
+                    getResultByTypeCModel() {
+                        // [ API ] - 取得機種附屬工單與其附屬機板細節
+                        this.GETcModelLots();
+                    },
+
+                    getResultByTypeLotNo() {
+                        // [ API ] - 取得機種附屬的工單
+                        this.GETlotDetail();
+                    },
+
+                    //點擊搜尋後動作
+                    handleSubmit() {
+                        //搜尋前清空搜尋紀錄
+                        this.lotNoSelect = "";
+                        this.sortStarDate = "";
+                        this.sortEndDate = "";
+                        this.sortTopBtm = "";
+                        sessionStorage.clear();
+                        this.searchResult = [];
+                        this.lotNoList = [];
+                        //紀錄下拉選單選項
+                        sessionStorage.setItem(
+                            "selectSearchType_L1",
+                            this.selectSearchType
+                        );
+
+                        if (this.selectSearchType === "機種名稱") {
+                            this.getResultByTypeCModel();
+                        } else if (this.selectSearchType === "工單號") {
+                            this.getResultByTypeLotNo();
+                        } else {
+                            //顯示[搜尋無結果]狀態頁
+                            this.showNoSearchResult = true;
+                        }
+                    },
+
+                    //顯示取得的機板資料
+                    selectBoard(item) {
+                        this.boardSelect = {
+                            ...item,
+                        };
+                        //擷取本筆資料終須傳送的資訊
+                        sessionStorage.setItem(
+                            "boardId",
+                            this.boardSelect.boardId
+                        );
+                        sessionStorage.setItem(
+                            "boardSn",
+                            this.boardSelect.boardSn
+                        );
+                        sessionStorage.setItem("lotNo", this.boardSelect.lotNo);
+                        sessionStorage.setItem(
+                            "topBtm",
+                            this.boardSelect.topBtm
+                        );
+                        sessionStorage.setItem(
+                            "cModel",
+                            this.boardSelect.cModel
+                        );
+                        sessionStorage.setItem(
+                            "imulti",
+                            this.boardSelect.imulti
+                        );
+                        sessionStorage.setItem(
+                            "totalComp",
+                            this.boardSelect.totalComp
+                        );
+                        sessionStorage.setItem(
+                            "failComp",
+                            this.boardSelect.failComp
+                        );
+                        sessionStorage.setItem("fDate", this.boardSelect.fDate);
+                        sessionStorage.setItem("factoryName", this.factoryName);
+                        sessionStorage.setItem(
+                            "remoteDomain",
+                            this.remoteDomain
+                        );
+                        sessionStorage.setItem(
+                            "selectedModel",
+                            this.selectedModel
+                        );
+
+                        //連結至 boardDetail頁面
+                        window.location.href = "/boardDetail";
+                    },
+
+                    //點擊左上logo清除暫存
+                    clearSessionStorage() {
+                        sessionStorage.clear();
+                        // this.tempSearchHistory = {};
+                        this.searchResult = [];
+                    },
+
+                    //下載excel
+                    downloadExcelFile() {
+                        this.isDownloading = true;
+                        // 設定請求的參數，例如：工單的所有機板資訊
+                        const requestData = {
+                            boardIds: this.filBoardIdArr, // 假設的機板 ID
+                            factoryName: this.factoryName, // 工廠名稱
+                        };
+
+                        // 使用 axios 進行 POST 請求
+                        if (this.remoteDomain == "localhost") {
+                            axios({
+                                method: "post",
+                                url: `/api/export/allBoards`, // 這個 URL 應該與後端路由匹配
+                                data: requestData,
+                                responseType: "blob", // 因為是要下載檔案，所以 responseType 設為 'blob'
+                                headers: { "SESSION-ID": this.sessionId },
+                            })
+                                .then((response) => {
+                                    this.isDownloading = true;
+                                    // 創建一個 Blob 來表示文件
+                                    const blob = new Blob([response.data], {
+                                        type: response.headers["content-type"],
+                                    });
+                                    // 創建一個 URL 並與 a 標籤連結，用於下載
+                                    const downloadUrl =
+                                        URL.createObjectURL(blob);
+                                    const a = document.createElement("a");
+                                    a.href = downloadUrl;
+
+                                    if (
+                                        this.filSearchRecord.lotNoSelect == ""
+                                    ) {
+                                        a.download = `${this.filSearchRecord.searchQuery}.xlsx`; // 自定義下載的文件名
+                                    } else {
+                                        a.download = `${this.filSearchRecord.lotNoSelect}.xlsx`; // 自定義下載的文件名
+                                    }
+                                    document.body.appendChild(a);
+                                    a.click();
+                                    document.body.removeChild(a);
+
+                                    this.isDownloading = false;
+                                    this.showDataUpdate = false;
+                                })
+                                .catch((error) => {
+                                    console.error("下載失敗:", error);
+                                    // 可以增加一些錯誤處理的邏輯
+                                    this.showDataUpdate = false;
+                                });
+                        } else {
+                            axios({
+                                method: "post",
+                                url: `http://${this.remoteDomain}/api/export/allBoards`, // 這個 URL 應該與後端路由匹配
+                                data: requestData,
+                                responseType: "blob", // 因為是要下載檔案，所以 responseType 設為 'blob'
+                                headers: { "SESSION-ID": this.sessionId },
+                            })
+                                .then((response) => {
+                                    this.isDownloading = true;
+                                    // 創建一個 Blob 來表示文件
+                                    const blob = new Blob([response.data], {
+                                        type: response.headers["content-type"],
+                                    });
+                                    // 創建一個 URL 並與 a 標籤連結，用於下載
+                                    const downloadUrl =
+                                        URL.createObjectURL(blob);
+                                    const a = document.createElement("a");
+                                    a.href = downloadUrl;
+
+                                    if (
+                                        this.filSearchRecord.lotNoSelect == ""
+                                    ) {
+                                        a.download = `${this.filSearchRecord.searchQuery}.xlsx`; // 自定義下載的文件名
+                                    } else {
+                                        a.download = `${this.filSearchRecord.lotNoSelect}.xlsx`; // 自定義下載的文件名
+                                    }
+                                    document.body.appendChild(a);
+                                    a.click();
+                                    document.body.removeChild(a);
+
+                                    this.isDownloading = false;
+                                    this.showDataUpdate = false;
+                                })
+                                .catch((error) => {
+                                    console.error("下載失敗:", error);
+                                    // 可以增加一些錯誤處理的邏輯
+                                    this.showDataUpdate = false;
+                                });
+                        }
+                    },
+
+                    //繪製 Bar-Chart
+                    drawBarChart() {
+                        if (this.barInstance) {
+                            this.barInstance.dispose();
+                            console.log("this.barInstance被銷毀了");
+                        }
+                        //掛載時導入圖表
+                        this.barInstance = echarts.init(
+                            document.getElementById("bar-chart")
+                        );
+                        // console.log('myChart_bar', myChart_bar);
+                        this.barInstance.setOption(this.option_bar);
+                        // 監聽容器大小更改圖表大小
+                        window.addEventListener("click", () => {
+                            this.barInstance.resize();
+                        });
+                        window.addEventListener("resize", () => {
+                            this.barInstance.resize();
+                        });
+                    },
+
+                    //繪製 Pie-Chart
+                    drawPieChart() {
+                        if (this.pieInstance) {
+                            this.pieInstance.dispose();
+                            console.log("this.pieInstance被銷毀了");
+                        }
+                        //掛載時導入圖表
+                        this.pieInstance = echarts.init(
+                            document.getElementById("pie-chart")
+                        );
+                        this.pieInstance.setOption(this.option_pie);
+                        //監聽容器大小更改圖表大小
+                        window.addEventListener("click", () => {
+                            this.pieInstance.resize();
+                        });
+                        window.addEventListener("resize", () => {
+                            this.pieInstance.resize();
+                        });
+                    },
+
+                    collectBoardId(arr) {
+                        console.log(
+                            "collectBoardId 被呼叫了，準備收集boardId給filBoardIdArr來計算儀表板數值"
+                        );
+                        let boardIdArr = [];
+                        if (arr.length != 0) {
+                            for (let i = 0; i < arr.length; i++) {
+                                boardIdArr.push(arr[i].boardId);
+                            }
+                        }
+                        return boardIdArr;
+                    },
+
+                    // [ API ] - 取得機種附屬的工單
+                    async GETcModelLots() {
+                        try {
+                            let response = [];
+                            //判斷remoteDomain是否等於localhost
+                            if (this.remoteDomain == "localhost") {
+                                response = await axios.get(
+                                    `/api/record/lot/cModel/${this.searchQuery}`,
+                                    {
+                                        headers: {
+                                            "SESSION-ID": this.sessionId,
+                                        },
+                                    }
+                                );
+                            } else {
+                                response = await axios.get(
+                                    `http://${this.remoteDomain}/api/record/lot/cModel/${this.searchQuery}`,
+                                    {
+                                        headers: {
+                                            "SESSION-ID": this.sessionId,
+                                        },
+                                    }
+                                );
+                            }
+                            //這裡取得的是機種相關的工單號
+                            const receivedData = response.data;
+                            console.log("接收工單號列表", receivedData);
+
+                            // 從本筆資料中抽出工單號存入this.lotNoList
+                            receivedData.forEach((item) => {
+                                this.lotNoList.push(item.lotNo);
+                                console.log("lotNoList push()", item);
+                            });
+                            console.log("this.lotNoList", this.lotNoList);
+                            this.lotNoSelect = this.lotNoList[0];
+
+                            // [ API ] - 取得機種附屬工單的附屬機板細節
+                            if (this.lotNoList) {
+                                this.GETcModelMultiLotsBoardsDetail(
+                                    this.lotNoList
+                                );
+                            }
+
+                            //控制顯示第二階端搜尋BAR 是否 disabled
+                            // this.isNotSearched = false;
+
+                            // 有資料時關閉錯誤提示頁面
+                            this.showNoSearchResult = false;
+                            this.showNoData = false;
+                        } catch (error) {
+                            console.log(error.response.data);
+                            if (error.response) {
+                                // 後端返回回應，但狀態碼不在2XX範圍內
+                                console.log(
+                                    "請求失敗，狀態碼：",
+                                    error.response.status
+                                );
+                                console.log("錯誤訊息：", error.response.data);
+                                //控制顯示第二階端搜尋BAR 是否 disabled
+                                this.isNotSearched = true;
+                                if (error.response.status === 404) {
+                                    //顯示[搜尋無結果]狀態頁
+                                    this.showNoSearchResult = true;
+                                    this.showNoData = false;
+                                } else if (error.response.status === 500) {
+                                    // 處理500錯誤
+                                } else {
+                                    // 其他錯誤處理
+                                }
+                            } else if (error.request) {
+                                // 請求發出但沒有收到回應
+                                console.log("請求發出但沒有收到回應");
+                            } else {
+                                // 在設置請求發生錯誤，或是在處理回應時觸發錯誤
+                                console.log("發生了一個錯誤：", error.message);
+                            }
+                        }
+                    },
+
+                    // [ API ] - Multi lot 取得機種附屬工單的附屬機板BoardId
+                    async GETcModelMultiLotsBoardsDetail(lotNoListArr) {
+                        try {
+                            console.log(
+                                "傳入GETcModelLotsBoardsDetail的值",
+                                lotNoListArr
+                            );
+                            let arr = [];
+                            let response = [];
+
+                            for (let i = 0; i < lotNoListArr.length; i++) {
+                                console.log("lotNoListArr:", lotNoListArr[i]);
+                                if (this.remoteDomain == "localhost") {
+                                    response = await axios.get(
+                                        `/api/record/board/findByLotNoAndCModel?lotNo=${lotNoListArr[i]}&cModel=${this.searchQuery}`,
+                                        {
+                                            headers: {
+                                                "SESSION-ID": this.sessionId,
+                                            },
+                                        }
+                                    );
+                                } else {
+                                    response = await axios.get(
+                                        `http://${this.remoteDomain}/api/record/board/findByLotNoAndCModel?lotNo=${lotNoListArr[i]}&cModel=${this.searchQuery}`,
+                                        {
+                                            headers: {
+                                                "SESSION-ID": this.sessionId,
+                                            },
+                                        }
+                                    );
+                                }
+                                arr.push(response.data);
+                            }
+                            if (arr.length != 0) {
+                                console.log("arr內容有值了：", arr);
+                                //打散陣列內的陣列
+                                const concatArr = [].concat(...arr);
+
+                                this.searchResult = concatArr;
+
+                                console.log(
+                                    "arr灌入this.searchResult:",
+                                    this.searchResult
+                                );
+
+                                //控制顯示第二階端搜尋BAR 是否 disabled
+                                this.isNotSearched = false;
+                            }
+                        } catch (error) {
+                            console.log(error.response.data);
+                            if (error.response) {
+                                // 後端返回回應，但狀態碼不在2XX範圍內
+                                console.log(
+                                    "請求失敗，狀態碼：",
+                                    error.response.status
+                                );
+                                console.log("錯誤訊息：", error.response.data);
+                                //控制顯示第二階端搜尋BAR disabled or not
+                                this.isNotSearched = true;
+
+                                if (error.response.status === 404) {
+                                    // 處理404錯誤
+                                } else if (error.response.status === 500) {
+                                    // 處理500錯誤
+                                } else {
+                                    // 其他錯誤處理
+                                }
+                            } else if (error.request) {
+                                // 請求發出但沒有收到回應
+                                console.log("請求發出但沒有收到回應");
+                            } else {
+                                // 在設置請求發生錯誤，或是在處理回應時觸發錯誤
+                                console.log("發生了一個錯誤：", error.message);
+                            }
+                        }
+                    },
+
+                    // [ API ] - Single lot 取得機種附屬工單的附屬機板BoardId
+                    async GETcModelSingleLotBoardsDetail(lot) {
+                        try {
+                            console.log(
+                                "傳入GETcModelLotsBoardsDetail的值",
+                                lot
+                            );
+                            let arr = [];
+                            let response = [];
+
+                            if (this.remoteDomain == "localhost") {
+                                response = await axios.get(
+                                    `/api/record/board/findByLotNoAndCModel?lotNo=${lot}&cModel=${this.searchQuery}`,
+                                    {
+                                        headers: {
+                                            "SESSION-ID": this.sessionId,
+                                        },
+                                    }
+                                );
+                            } else {
+                                response = await axios.get(
+                                    `http://${this.remoteDomain}/api/record/board/findByLotNoAndCModel?lotNo=${lot}&cModel=${this.searchQuery}`,
+                                    {
+                                        headers: {
+                                            "SESSION-ID": this.sessionId,
+                                        },
+                                    }
+                                );
+                            }
+                            console.log("單張：", response.data);
+                            this.searchResult = response.data;
+                            console.log(
+                                "arr灌入this.searchResult:",
+                                this.searchResult
+                            );
+
+                            //控制顯示第二階端搜尋BAR 是否 disabled
+                            this.isNotSearched = false;
+                        } catch (error) {
+                            console.log(error.response.data);
+                            if (error.response) {
+                                // 後端返回回應，但狀態碼不在2XX範圍內
+                                console.log(
+                                    "請求失敗，狀態碼：",
+                                    error.response.status
+                                );
+                                console.log("錯誤訊息：", error.response.data);
+                                //控制顯示第二階端搜尋BAR disabled or not
+                                this.isNotSearched = true;
+
+                                if (error.response.status === 404) {
+                                    // 處理404錯誤
+                                } else if (error.response.status === 500) {
+                                    // 處理500錯誤
+                                } else {
+                                    // 其他錯誤處理
+                                }
+                            } else if (error.request) {
+                                // 請求發出但沒有收到回應
+                                console.log("請求發出但沒有收到回應");
+                            } else {
+                                // 在設置請求發生錯誤，或是在處理回應時觸發錯誤
+                                console.log("發生了一個錯誤：", error.message);
+                            }
+                        }
+                    },
+
+                    // 將取得的資料分組及排序
+                    async reMapSearchResult(responcedSearchResult) {
+                        let responseBoardSnArr = [];
+                        responseBoardSnArr = responcedSearchResult;
+
+                        // 分成正反面兩組
+                        const groupB = [];
+                        const groupT = [];
+                        responseBoardSnArr.forEach((item) => {
+                            if (item.topBtm === "B") {
+                                groupB.push(item);
+                            } else if (item.topBtm === "T") {
+                                groupT.push(item);
+                            }
+                        });
+
+                        //分別在正反兩面的陣列中 SET
+                        function mergeAndRemoveDuplicates(group) {
+                            const merged = [];
+                            group.forEach(function (item) {
+                                if (
+                                    !merged.some(function (mergedItem) {
+                                        return (
+                                            mergedItem.boardSn === item.boardSn
+                                        );
+                                    })
+                                ) {
+                                    merged.push(item);
+                                }
+                            });
+                            return merged;
+                        }
+                        const mergedGroupB = mergeAndRemoveDuplicates(groupB);
+                        const mergedGroupT = mergeAndRemoveDuplicates(groupT);
+
+                        //重組在一起並依 sn 排序
+                        const result = mergedGroupB.concat(mergedGroupT);
+                        result.sort(function (a, b) {
+                            return a.boardSn.localeCompare(
+                                b.boardSn,
+                                undefined,
+                                {
+                                    numeric: true,
+                                }
+                            );
+                        });
+
+                        return result;
+                    },
+
+                    // [ API ] - 取得工單附屬的機板細節
+                    async GETlotDetail() {
+                        try {
+                            let response = {};
+                            //判斷remoteDomain是否等於localhost
+                            if (this.remoteDomain == "localhost") {
+                                response = await axios.get(
+                                    `/api/record/board/lotNo/${this.searchQuery}`,
+                                    {
+                                        headers: {
+                                            "SESSION-ID": this.sessionId,
+                                        },
+                                    }
+                                );
+                            } else {
+                                response = await axios.get(
+                                    `http://${this.remoteDomain}/api/record/board/lotNo/${this.searchQuery}`,
+                                    {
+                                        headers: {
+                                            "SESSION-ID": this.sessionId,
+                                        },
+                                    }
+                                );
+                            }
+
+                            // 在這裡處理後端獲取的數據
+                            this.searchResult = response.data;
+                            if (this.searchResult.length != 0) {
+                                console.log(
+                                    "this.searchResult.length != 0 搜尋by工單",
+                                    this.searchResult
+                                );
+                            }
+
+                            //控制顯示第二階端搜尋BAR disabled or not
+                            this.isNotSearched = false;
+
+                            // 有資料時關閉錯誤提示頁面
+                            this.showNoSearchResult = false;
+                            this.showNoData = false;
+
+                            // 清空時間紀錄
+                            this.sortStarDate = "";
+                            this.sortEndDate = "";
+                            // 對資料做處理
+                            // 取得本工單第一筆資料及最後一筆資料日期
+
+                            let searchResultAfterSort = [];
+
+                            searchResultAfterSort = this.searchResult.sort(
+                                (a, b) => {
+                                    var dateA = new Date(a.fDate);
+                                    var dateB = new Date(b.fDate);
+                                    return dateA - dateB;
+                                }
+                            );
+                            console.log(
+                                "=======searchResultAfterSort",
+                                searchResultAfterSort
+                            );
+
+                            if (this.sortStarDate == "") {
+                                this.sortStarDate =
+                                    searchResultAfterSort[0].fDate.substring(
+                                        0,
+                                        10
+                                    );
+                                this.sortEndDate = searchResultAfterSort[
+                                    searchResultAfterSort.length - 1
+                                ].fDate.substring(0, 10);
+                                console.log(
+                                    "=======this.sortStarDate",
+                                    this.sortStarDate
+                                );
+                            }
+                        } catch (error) {
+                            // 在這裡處理請求錯誤
+                            console.log(error.response.data);
+                            if (error.response) {
+                                // 後端返回回應，但狀態碼不在2XX範圍內
+                                console.log(
+                                    "請求失敗，狀態碼：",
+                                    error.response.status
+                                );
+                                console.log("錯誤訊息：", error.response.data);
+
+                                //控制顯示第二階端搜尋BAR disabled or not
+                                this.isNotSearched = true;
+
+                                if (error.response.status === 404) {
+                                    // 處理404錯誤
+                                    //顯示[搜尋無結果]狀態頁
+                                    this.showNoSearchResult = true;
+                                    this.showNoData = false;
+                                } else if (error.response.status === 500) {
+                                    // 處理500錯誤
+                                } else {
+                                    // 其他錯誤處理
+                                }
+                            } else if (error.request) {
+                                // 請求發出但沒有收到回應
+                                console.log("請求發出但沒有收到回應");
+                            } else {
+                                // 在設置請求發生錯誤，或是在處理回應時觸發錯誤
+                                console.log("發生了一個錯誤：", error.message);
+                            }
+                        }
+                    },
+
+                    // [ API ] - 取得機種附屬的工單
+                    async POSTallBoardDetail(requestData) {
+                        try {
+                            let response = [];
+                            this.filAiTotalNGCount = 0; //歸零 AI 判讀 NG 總數
+                            this.filAiTotalPASSCount = 0; //歸零 AI 判讀 PASS 總數
+
+                            this.filAiTotalMissingCount = 0; //歸零 AI 訓練不足總數
+                            this.filAiTotalMissingZEROCount = 0; //歸零 AI 模型訓練次數為 0 總數
+                            this.filAiTotalMissingNGCount = 0; //歸零 AI 訓練不足 NG 總數
+                            this.filAiTotalMissingPASSCount = 0; //歸零 AI 訓練不足 PASS 總數
+
+                            this.filOpTotalNGCount = 0; //歸零 OP 判讀 NG 總數
+                            this.filOpTotalPASSCount = 0; //歸零 OP 判讀 PASS 總數
+
+                            //儲存本次搜尋條件紀錄
+                            sessionStorage.setItem(
+                                "filSearchRecord",
+                                JSON.stringify(this.filSearchRecord)
+                            );
+
+                            if (this.remoteDomain == "localhost") {
+                                response = await axios.post(
+                                    `/api/export/getAllBoardsDataToExport2`,
+                                    requestData,
+                                    {
+                                        headers: {
+                                            "SESSION-ID": this.sessionId,
+                                        },
+                                    }
+                                );
+                            } else {
+                                response = await axios.post(
+                                    `http://${this.remoteDomain}/api/export/getAllBoardsDataToExport2`,
+                                    requestData,
+                                    {
+                                        headers: {
+                                            "SESSION-ID": this.sessionId,
+                                        },
+                                    }
+                                );
+                            }
+                            console.log("POST请求成功");
+                            console.log("返回的数据：", response.data);
+                            let receivedData = response.data;
+                            let tempCompErrorArr = []; //分別紀錄每個元件NG原因
+                            let compErrorCount = []; //紀錄每個元件NG原因及數量
+                            let errorTop5 = []; //slice出前五大NG原因
+                            let aoiAiPoNGCompsArr = []; //紀錄AOI、AI、OP皆判讀NG的元件名稱
+
+                            //計算AOI判讀總數
+                            this.filAoiTotalNGCount = receivedData.length;
+                            this.tempReceivedData = receivedData;
+                            this.tempReceivedData.forEach((item) => {
+                                //計算 AI 判讀 NG 總數
+                                if (
+                                    (item.constDataSet >= 50 ||
+                                        item.constDataSet == -1) &&
+                                    item.aiResult.toLowerCase() === "ng"
+                                ) {
+                                    this.filAiTotalNGCount += 1;
+                                }
+                                //計算 AI 判讀 PASS 總數
+                                if (
+                                    (item.constDataSet >= 50 ||
+                                        item.constDataSet == -1) &&
+                                    item.aiResult.toLowerCase() === "ok"
+                                ) {
+                                    this.filAiTotalPASSCount += 1;
+                                }
+                                //計算AI訓練不足總數
+                                //TODO 小於 50 大於等於 0 的總數 (2023/12/11 OK)
+                                if (
+                                    item.constDataSet < 50 &&
+                                    item.constDataSet >= 0
+                                ) {
+                                    this.filAiTotalMissingCount += 1;
+                                }
+
+                                //計算 AI 模型訓練次數為 0 總數 (2023/12/11 OK)
+                                //TODO
+                                if (
+                                    item.constDataSet === 0 ||
+                                    (item.aiResult === "--" &&
+                                        item.constDataSet === -1) ||
+                                    (item.aiResult === "--" &&
+                                        item.constDataSet >= 50)
+                                ) {
+                                    this.filAiTotalMissingZEROCount += 1;
+                                }
+
+                                //計算 AI 訓練不足 NG 總數
+                                //TODO
+                                if (
+                                    item.constDataSet < 50 &&
+                                    item.constDataSet > 0 &&
+                                    item.aiResult.toLowerCase() === "ng"
+                                ) {
+                                    this.filAiTotalMissingNGCount += 1;
+                                }
+                                //計算 AI 訓練不足 PASS 總數
+                                //TODO
+                                if (
+                                    item.constDataSet < 50 &&
+                                    item.constDataSet > 0 &&
+                                    item.aiResult.toLowerCase() === "ok"
+                                ) {
+                                    this.filAiTotalMissingPASSCount += 1;
+                                }
+
+                                //計算 OP 判讀 NG 總數
+                                if (item.confirmDefect.toLowerCase() !== "ok") {
+                                    console.log("===item NG===", item);
+                                    this.filOpTotalNGCount += 1;
+                                }
+                                //計算 OP判讀 PASS 總數
+                                if (item.confirmDefect.toLowerCase() == "ok") {
+                                    console.log("===item NG===", item);
+                                    this.filOpTotalPASSCount += 1;
+                                }
+
+                                //三方判讀 NG 最高元件
+                                if (
+                                    item.aiResult.toLowerCase() === "ng" &&
+                                    item.confirmDefect.toLowerCase() !== "ok"
+                                ) {
+                                    aoiAiPoNGCompsArr.push(item.compName);
+                                    console.log(item.aiResult);
+                                    console.log(item.confirmDefect);
+                                }
+
+                                // 取得缺失原因紀錄
+                                tempCompErrorArr.push(item.machineDefect);
+                            });
+
+                            console.log(
+                                "AOI、AI、OP皆判讀NG的元件名稱:",
+                                aoiAiPoNGCompsArr
+                            );
+                            if (aoiAiPoNGCompsArr.length !== 0) {
+                                let arr = [];
+                                aoiAiPoNGCompsArr.forEach((comp) => {
+                                    if (arr[comp]) {
+                                        arr[comp]++;
+                                    } else {
+                                        arr[comp] = 1;
+                                    }
+                                });
+                                console.log(
+                                    "計算AOI、AI、OP皆判讀NG的元件紀錄",
+                                    arr
+                                );
+
+                                this.topAoiAiPoNGArr = Object.keys(arr)
+                                    .map((comp) => ({
+                                        value: arr[comp],
+                                        name: comp,
+                                    }))
+                                    .sort((a, b) => b.value - a.value);
+
+                                console.log(
+                                    "排序後的AOI、AI、OP皆判讀NG的元件紀錄",
+                                    this.topAoiAiPoNGArr
+                                );
+                                this.topAoiAiPoNGComp =
+                                    this.topAoiAiPoNGArr[0].name;
+                            } else if (aoiAiPoNGCompsArr.length === 0) {
+                                this.topAoiAiPoNGArr = [];
+                                this.topAoiAiPoNGArr.push("--");
+                                console.log(
+                                    "沒有AOI、AI、OP皆判讀NG的元件紀錄",
+                                    this.topAoiAiPoNGArr
+                                );
+                                this.topAoiAiPoNGComp = this.topAoiAiPoNGArr[0];
+                            }
+
+                            console.log("缺失原因紀錄", tempCompErrorArr);
+                            // 計算各個缺失重複次數數量
+                            tempCompErrorArr.forEach((str) => {
+                                if (compErrorCount[str]) {
+                                    compErrorCount[str]++;
+                                } else {
+                                    compErrorCount[str] = 1;
+                                }
+                            });
+                            console.log("計算缺失紀錄", compErrorCount);
+
+                            // 編組前五大缺失數據陣列
+                            errorTop5 = Object.keys(compErrorCount)
+                                .map((str) => ({
+                                    value: compErrorCount[str],
+                                    name: str,
+                                }))
+                                .sort((a, b) => b.value - a.value)
+                                .slice(0, 5);
+                            this.pieChartErrorData = errorTop5;
+
+                            //取得五大缺失及數量後將資料灌入 Bar-Data 中
+                            let errorName = [];
+                            let errorValue = [];
+                            errorTop5.forEach((item) => {
+                                errorName.unshift(item.name);
+                                errorValue.unshift(item.value);
+                            });
+
+                            //取得五大缺失及數量後將資料灌入 Bar-Data 中
+                            this.option_bar.yAxis[0].data = errorName;
+                            this.option_bar.series[0].data = errorValue;
+                            this.barChartErrorItem = errorName;
+                            this.barChartErrorValue = errorValue;
+
+                            //取得五大缺失及數量後將資料灌入 Pie-Data 中
+                            this.option_pie.series[0].data =
+                                this.pieChartErrorData;
+
+                            //繪製 Bar-Chart
+                            this.drawBarChart();
+                            //繪製 Pie-Chart
+                            this.drawPieChart();
+
+                            //儲存本次搜尋條件紀錄
+                            sessionStorage.setItem(
+                                "filSearchRecord",
+                                JSON.stringify(this.filSearchRecord)
+                            );
+
+                            // 關閉[資料傳輸中]頁面
+                            this.showDataUpdate = false;
+                        } catch (error) {
+                            if (error.response) {
+                                console.log(
+                                    "請求失敗，狀態碼：",
+                                    error.response.status
+                                );
+                                console.log("錯誤訊息：", error.response.data);
+                                this.showDataUpdate = false;
+                                this.showNoSearchResult = true;
+                                if (error.response.status === 404) {
+                                    // 處理404錯誤
+                                } else if (error.response.status === 500) {
+                                    // 處理500錯誤
+                                } else {
+                                    // 其他錯誤處理
+                                }
+                            } else if (error.request) {
+                                // 請求發出但沒有收到回應
+                                console.log("請求發出但沒有收到回應");
+                            } else {
+                                // 在設置請求發生錯誤，或是在處理回應時觸發錯誤
+                                console.log("發生了一個錯誤：", error.message);
+                            }
+                        }
+                    },
+
+                    // 比對情報平台計算資料是否一樣
+                    areArraysEqual(arr1, arr2) {
+                        if (arr1.length !== arr2.length) {
+                            return false;
+                        }
+                        for (let i = 0; i < arr1.length; i++) {
+                            if (arr1[i] !== arr2[i]) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    },
+
+                    // method
+                    selectModel(model) {
+                        this.selectedModel = model;
+                        this.searchQuery = model;
+                        this.showDropdown = false;
+                    },
+                },
+
+                watch: {
+                    // 監聽 Search bar 輸入
+                    searchQuery(value) {
+                        if (
+                            !value ||
+                            value.trim().length == 0 ||
+                            this.selectSearchType != "機種名稱" ||
+                            value == this.selectedModel
+                        ) {
+                            this.models = [];
+                            this.showDropdown = false;
+                            return;
+                        }
+                        // 如果已經存在一個待執行的延遲操作，則取消它
+                        if (this.timeout) {
+                            clearTimeout(this.timeout);
+                        }
+
+                        // 設定延遲 500 毫秒
+                        this.timeout = setTimeout(() => {
+                            // 再次檢查 searchQuery 的值
+                            if (
+                                this.searchQuery &&
+                                this.searchQuery.trim().length > 0
+                            ) {
+                                console.log("remoteDomain=", this.remoteDomain);
+                                if (this.remoteDomain == "localhost") {
+                                    console.log("localhost");
+                                    axios
+                                        .get(
+                                            `/api/record/model/findByKeywords?keywords=${value}`,
+                                            {
+                                                headers: {
+                                                    "SESSION-ID":
+                                                        this.sessionId,
+                                                },
+                                            }
+                                        )
+                                        .then((response) => {
+                                            console.log(response.data);
+                                            this.models = response.data;
+                                            this.showDropdown =
+                                                this.models.length > 0;
+                                        })
+                                        .catch((error) => {
+                                            console.log(error.response);
+                                        });
+                                } else {
+                                    console.log("remote");
+                                    axios
+                                        .get(
+                                            `http://${this.remoteDomain}/api/record/model/findByKeywords?keywords=${value}`,
+                                            {
+                                                headers: {
+                                                    "SESSION-ID":
+                                                        this.sessionId,
+                                                },
+                                            }
+                                        )
+                                        .then((response) => {
+                                            console.log(response.data);
+                                            this.models = response.data;
+                                            this.showDropdown =
+                                                this.models.length > 0;
+                                        })
+                                        .catch((error) => {
+                                            console.log(error.response);
+                                        });
+                                }
+                            }
+                        }, 500); // 這裡的500可以調整，單位是毫秒
+                    },
+
+                    // 監視搜尋條件顯示對應的第二層篩選框
+                    selectSearchType(value) {
+                        let type = sessionStorage.getItem(
+                            "selectSearchType_L1"
+                        );
+                        if (value == "機種名稱") {
+                            this.showCModelSubSearchBar = true;
+                            this.showLotNoSubSearchBar = false;
+                            this.isNotSearched = true;
+                            if (type) {
+                                if (type == "機種名稱") {
+                                    this.isNotSearched = false;
+                                }
+                            }
+                        } else if (value == "工單號") {
+                            this.showCModelSubSearchBar = false;
+                            this.showLotNoSubSearchBar = true;
+                            this.isNotSearched = true;
+                            if (type) {
+                                if (type == "工單號") {
+                                    this.isNotSearched = false;
+                                }
+                            }
+                        }
+                    },
+
+                    //dashboard資料計算
+                    filBoardIdArr: {
+                        handler: function (newItems, oldItems) {
+                            console.log("dashboard資料計算被喚起了");
+                            const areArraysEqual = this.areArraysEqual(
+                                newItems,
+                                oldItems
+                            );
+                            if (areArraysEqual) {
+                                console.log("陣列的值保持不變");
+                            } else {
+                                console.log("陣列的值發生變化");
+                                this.showDataUpdate = true;
+                                this.showNoSearchResult = false;
+
+                                const requestData = {
+                                    boardIds: this.filBoardIdArr, // 假設的機板 ID
+                                    factoryName: this.factoryName, // 工廠名稱
+                                };
+
+                                console.log(
+                                    "filBoardIdArr requestData=====",
+                                    requestData
+                                );
+                                // [ API ] - 取得機種附屬的工單
+                                this.POSTallBoardDetail(requestData);
+                            }
+                        },
+                        deep: true,
+                    },
+
+                    async filSearchResult_L1(newValue) {
+                        let regroup = [];
+                        this.searchResultForList = newValue;
+                        regroup = await this.reMapSearchResult(
+                            this.searchResultForList
+                        );
+                        console.log(">>>>>>>>>>>>>> newValue", newValue);
+                        console.log(">>>>>>>>>>>>>> regroup", regroup);
+                        this.searchResultForList = regroup;
+                    },
+                },
+
+                computed: {
+                    //紀錄搜尋結果for 返回此頁時使用
+                    filSearchRecord() {
+                        let obj = {};
+                        //第一階段搜尋列用資料
+                        obj.searchQuery = this.searchQuery; //紀錄第一階段搜尋文字
+                        obj.remoteDomain = this.remoteDomain; //紀錄變動的Domain
+                        obj.selectSearchType = this.selectSearchType; //紀錄搜尋類型
+
+                        //第二階段搜尋列用資料
+                        obj.selectTab = this.selectTab; //紀錄TAB選單
+                        //第二階段搜尋列用資料 - 機種
+                        obj.lotNoList = this.lotNoList; //紀錄下拉工單list
+                        obj.lotNoSelect = this.lotNoSelect; //紀錄下拉工單的所選值
+
+                        //第二階段篩選列用資料 - 工單
+                        obj.sortStarDate = this.sortStarDate; //紀錄過濾起始時間
+                        obj.sortEndDate = this.sortEndDate; //紀錄過濾結束時間
+                        obj.sortTopBtm = this.sortTopBtm; //紀錄過濾正反面
+                        //第三階段篩選列用資料 - 工單
+                        obj.boardSnKeyword = this.boardSnKeyword; //紀錄過濾機板編號
+
+                        // 不良列表用資料
+                        obj.searchResult = this.searchResult; //紀錄searchResult
+
+                        // dashboard用資料
+                        obj.filBoardArrCount = this.filBoardIdArr.length;
+                        obj.filAoiTotalNGCount = this.filAoiTotalNGCount;
+                        obj.filAiTotalNGCount = this.filAiTotalNGCount;
+                        obj.barChartErrorItem = this.barChartErrorItem;
+                        obj.barChartErrorValue = this.barChartErrorValue;
+                        obj.pieChartErrorData = this.pieChartErrorData;
+
+                        return obj;
+                    },
+
+                    //過濾搜尋結果
+                    //DASHBOARD 專用過濾搜尋結果 L1
+                    filSearchResult_L1() {
+                        //依輸入字串結果過濾
+                        if (this.searchResult.length != 0) {
+                            console.log("L1 感應到searchResult有值進來了");
+                            // console.log('現在的 searchResult 中的內容：', this.searchResult);
+                            let arr = Array.from(this.searchResult);
+                            console.log(
+                                "arr === this.searchResult",
+                                arr === this.searchResult
+                            );
+                            if (arr.length != 0) {
+                                // 依下拉機種名稱過濾
+                                if (this.lotNoSelect != "") {
+                                    arr = arr.filter((result) => {
+                                        console.log(
+                                            "process L1 (return lotNo)"
+                                        );
+                                        return (
+                                            result.lotNo === this.lotNoSelect
+                                        );
+                                    });
+                                }
+
+                                //依時間區間過濾
+                                if (this.sortStarDate || this.sortEndDate) {
+                                    arr = arr.filter((result) => {
+                                        console.log(
+                                            "process L1 (return dateResult)"
+                                        );
+                                        return (
+                                            result.fDate.substring(0, 10) >=
+                                                this.sortStarDate &&
+                                            result.fDate.substring(0, 10) <=
+                                                this.sortEndDate
+                                        );
+                                    });
+                                }
+
+                                //判斷是否有依正反面過濾
+                                if (this.sortTopBtm != "") {
+                                    arr = arr.filter((result) => {
+                                        console.log(
+                                            "process L1 (return TopBtm)"
+                                        );
+                                        return (
+                                            result.topBtm === this.sortTopBtm
+                                        );
+                                    });
+                                }
+
+                                console.log("process L1 (inside if)");
+                            }
+                            console.log("process L1 (outside if)");
+                            //繪製 dashboard
+
+                            //蒐集 boardID
+                            this.filBoardIdArr = this.collectBoardId(arr);
+                            return arr;
+                        }
+                    },
+                    //LIST 專用過濾搜尋結果 L2
+                    filSearchResult_L2() {
+                        let arr = this.searchResultForList;
+
+                        //過濾關鍵字
+                        if (this.boardSnKeyword != "") {
+                            arr = arr.filter((result) => {
+                                return (
+                                    result.boardSn.indexOf(
+                                        this.boardSnKeyword
+                                    ) != -1
+                                );
+                            });
+                        }
+
+                        return arr;
+                    },
+
+                    // [ Dashboard ] - 計算NG基板總數量
+                    NGBoardCount() {
+                        return this.filBoardIdArr.length;
+                    },
+                },
+
+                created() {
+                    //從瀏覽器Cookie中提取SESSION-ID
+                    const sessionCookie = document.cookie
+                        .split("; ")
+                        .find((row) => row.startsWith("SESSION-ID="));
+                    console.log(sessionCookie);
+                    if (sessionCookie) {
+                        this.sessionId = sessionCookie.split("=")[1];
+                    } else {
+                        console.error("SESSION-ID cookie not found");
+                    }
+                    this.localDomain = document.domain;
+                    if (this.localDomain == "10.30.100.17") {
+                        this.factoryName = "SanMin";
+                    } else if (this.localDomain == "10.90.1.164") {
+                        this.factoryName = "HuaYa";
+                    } else if (this.localDomain == "10.11.20.112") {
+                        this.factoryName = "Mitac";
+                    } else if (this.localDomain == "localhost") {
+                        this.factoryName = "Local";
+                    }
+                    this.remoteDomain = this.localDomain;
+
+                    this.selectedModel =
+                        sessionStorage.getItem("selectedModel");
+
+                    //取得目前登入者資訊
+                    if (this.localDomain == "localhost") {
+                        axios
+                            .get(`/api/user/getCurrentUser`)
+                            .then((response) => {
+                                this.currentUser = response.data;
+                            });
+                    } else {
+                        axios
+                            .get(
+                                `http://${this.localDomain}/api/user/getCurrentUser`
+                            )
+                            .then((response) => {
+                                this.currentUser = response.data;
+                            });
+                    }
+                },
+
+                mounted() {
+                    // 在掛載時如果有「搜尋紀錄暫存」將資料倒到實體data中
+                    const storedObject =
+                        sessionStorage.getItem("filSearchRecord");
+                    let tempStoredObject = {};
+                    if (storedObject) {
+                        // console.log('暫存傳入的資料', storedObject);
+                        tempStoredObject = JSON.parse(storedObject);
+                        console.log("解析過後的資料", tempStoredObject);
+
+                        this.searchQuery = tempStoredObject.searchQuery;
+                        console.log(
+                            "解析過後的資料searchQuery",
+                            tempStoredObject.searchQuery
+                        );
+                        this.remoteDomain = tempStoredObject.remoteDomain;
+                        console.log(
+                            "解析過後的資料remoteDomain",
+                            tempStoredObject.remoteDomain
+                        );
+                        this.selectSearchType =
+                            tempStoredObject.selectSearchType;
+                        console.log(
+                            "解析過後的資料selectSearchType",
+                            tempStoredObject.selectSearchType
+                        );
+
+                        this.selectTab = tempStoredObject.selectTab;
+                        console.log(
+                            "解析過後的資料selectTab",
+                            tempStoredObject.selectTab
+                        );
+                        this.lotNoSelect = tempStoredObject.lotNoSelect;
+                        console.log(
+                            "解析過後的資料lotNoSelect",
+                            tempStoredObject.lotNoSelect
+                        );
+                        this.lotNoList = tempStoredObject.lotNoList;
+                        console.log(
+                            "解析過後的資料lotNoList",
+                            tempStoredObject.lotNoList
+                        );
+                        this.sortStarDate = tempStoredObject.sortStarDate;
+                        console.log(
+                            "解析過後的資料sortStarDate",
+                            tempStoredObject.sortStarDate
+                        );
+                        this.sortEndDate = tempStoredObject.sortEndDate;
+                        console.log(
+                            "解析過後的資料sortEndDate",
+                            tempStoredObject.sortEndDate
+                        );
+                        this.sortTopBtm = tempStoredObject.sortTopBtm;
+                        console.log(
+                            "解析過後的資料sortTopBtm",
+                            tempStoredObject.sortTopBtm
+                        );
+
+                        // NG板紀錄用資料
+                        this.searchResult = tempStoredObject.searchResult;
+
+                        // dashboard用資料
+                        this.filBoardArrCount =
+                            tempStoredObject.filBoardArrCount;
+                        this.filAoiTotalNGCount =
+                            tempStoredObject.filAoiTotalNGCount;
+                        this.filAiTotalNGCount =
+                            tempStoredObject.filAiTotalNGCount;
+                        this.option_bar.yAxis[0].data =
+                            tempStoredObject.barChartErrorItem;
+                        this.option_bar.series[0].data =
+                            tempStoredObject.barChartErrorValue;
+                        this.option_pie.series[0].data =
+                            tempStoredObject.pieChartErrorData;
+                        this.drawBarChart();
+                        this.drawPieChart();
+                        // 有資料時關閉錯誤提示頁面
+                        this.showNoSearchResult = false;
+                        this.showNoData = false;
+                    }
+                },
+            });
+        </script>
+    </body>
+</html>
