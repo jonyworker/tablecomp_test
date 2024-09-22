@@ -2,6 +2,8 @@
 import { ref, reactive } from "vue";
 import JTable from "./components/Table/Table.vue";
 // import RTable from "./components/TableNew.vue";
+import ChartJs from "./components/ChartJs/ChartJs.vue";
+import Fuck from "./components/ChartJs/Fuck.vue";
 
 const columnHeadData = [
     { key: "id", label: "ID", sort: true },
@@ -201,22 +203,22 @@ const radioList = [
     },
 ];
 const isRadioPicked = ref("");
-const { add, toasts } = useToast();
+// const { add, toasts } = useToast();
 
-const showSuccess = () => {
-    add({
-        message: "Success Message",
-        themeColor: "success",
-        life: 3000,
-    });
-};
-const showfuck = () => {
-    add({
-        message: "fuck",
-        themeColor: "error",
-        life: 3000,
-    });
-};
+// const showSuccess = () => {
+//     add({
+//         message: "Success Message",
+//         themeColor: "success",
+//         life: 3000,
+//     });
+// };
+// const showfuck = () => {
+//     add({
+//         message: "fuck",
+//         themeColor: "error",
+//         life: 3000,
+//     });
+// };
 </script>
 
 <template>
@@ -487,6 +489,13 @@ const showfuck = () => {
         :label="item.label"
         v-model="isRadioPicked"
     ></RadioButton> -->
+
+    <!-- ChartJs -->
+    <div style="width: 50%">
+        <ChartJs></ChartJs>
+    </div>
+
+    <Fuck></Fuck>
 </template>
 
 <style scoped>
