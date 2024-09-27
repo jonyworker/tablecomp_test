@@ -4,6 +4,8 @@ import JTable from "./components/Table/Table.vue";
 // import RTable from "./components/TableNew.vue";
 import ChartJs from "./components/ChartJs/ChartJs.vue";
 import Fuck from "./components/ChartJs/Fuck.vue";
+import Accordion from "./components/Accordion/Accordion.vue";
+import Datepicker from "./components/Datepicker/Datepicker.vue";
 
 const columnHeadData = [
     { key: "id", label: "ID", sort: true },
@@ -496,6 +498,16 @@ const isRadioPicked = ref("");
     </div>
 
     <Fuck></Fuck>
+
+    <Accordion></Accordion>
+    <Accordion></Accordion>
+
+    <Datepicker range></Datepicker>
+
+    <Datepicker></Datepicker>
+    <Datepicker range></Datepicker>
+    <!-- <Datepicker range></Datepicker> -->
+    <!-- <Datepicker></Datepicker> -->
 </template>
 
 <style scoped>
