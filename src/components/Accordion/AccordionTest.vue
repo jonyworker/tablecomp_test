@@ -1,50 +1,52 @@
 <script setup>
 import { ref } from "vue";
 
-const items = ref([
-    {
-        title: "Apples",
-        expanded: false,
-        contents: [
-            "Apples are a fine fruit often associated with good health, and fewer doctor's appointments.",
-            "Example: An apple a day keeps the doctor away.",
-        ],
-    },
-    {
-        title: "Lemons",
-        expanded: false,
-        contents: [
-            "Lemons are good with almost anything, yet are often have a negative connotation when used in conversation.",
-            "Example: The bread from the french bakery is normally very good, but the one we bought today was a lemon.",
-        ],
-    },
-    {
-        title: "Kiwis",
-        expanded: false,
-        contents: ["Kiwis are a fun, under-appreciated fruit."],
-    },
+const props = defineProps({
+  data: {
+    type: Array,
+    default: () => []
+  },
+})
+
+const accordionItems = ref([
+    ...props.data
 ]);
 
 const accordionToggle = (index) => {
-    items.value[index].expanded = !items.value[index].expanded;
+  accordionItems.value[index].expanded = !accordionItems.value[index].expanded;
 };
 </script>
 
 <template>
-    <div class="accordion">
-        <ul aria-label="Accordion" class="accordion-controls">
-            <li v-for="(item, index) in items" :key="index">
+    <div class="accordion__container">
+        <ul aria-label="Accordion" class="accordion__list">
+            <li v-for="(item, index) in accordionItems" :key="index" class="accordion__item">
                 <button
                     class="accordion--button"
-                    :aria-controls="'content-' + index"
-                    :aria-expanded="item.expanded.toString()"
                     @click="accordionToggle(index)"
                 >
-                    {{ item.title }}
+                    <span>{{item.title}}</span>
+                    <!-- 箭頭 - 下 -->
+                    <template v-if="item.expanded">
+                        <div style="width: 24px;height: 24px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" width="100%" fill="currentColor">
+                                <path d="M480-528 296-344l-56-56 240-240 240 240-56 56-184-184Z"/>
+                            </svg>
+                        </div>
+                    </template>
+
+                    <!-- 箭頭 - 上 -->
+                    <template v-else>
+                        <div style="width: 24px;height: 24px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="100%" viewBox="0 -960 960 960" width="100%" fill="currentColor">
+                                <path d="M480-344 240-584l56-56 184 184 184-184 56 56-240 240Z"/>
+                            </svg>
+                        </div>
+                    </template>
+
                 </button>
                 <div
                     class="accordion--body"
-                    :aria-hidden="!item.expanded"
                     v-show="item.expanded"
                 >
                     <p v-for="(content, i) in item.contents" :key="i">
@@ -57,51 +59,53 @@ const accordionToggle = (index) => {
 </template>
 
 <style lang="scss" scoped>
-$base-margin: 24px;
-$primary-text-color: black;
-$light-text-color: white;
-$gray: gray;
+//$base-margin: 24px;
+//$primary-text-color: black;
+//$light-text-color: white;
+//$gray: gray;
 
-$accodion-spacing: $base-margin / 2;
+*{
+  outline: 1px solid  green;
+}
 
-.accordion {
-    ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
+.accordion__container {
+
+    .accordion__list {
+        border: 1px solid #f00;
     }
-    li {
-        margin-bottom: 1px;
+    .accordion__item {
+        border-bottom: 1px solid #f00;
+        &:last-child {
+            border-bottom: none;
+        }
     }
+
     .accordion--button {
         position: relative;
-        background: none;
-        border-radius: 0;
-        background: $gray;
-        color: $light-text-color;
-        padding: $accodion-spacing;
-        margin: 0;
-        display: block;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         width: 100%;
-        text-align: left;
-        &:focus {
-            outline: 1px dashed rgba(0, 0, 0, 0.5);
-        }
-        &[aria-expanded="false"]:after {
-            content: "+";
-            display: inline-block;
-            right: $accodion-spacing;
-            position: absolute;
-        }
-        &[aria-expanded="true"]:after {
-            content: "-";
-            display: inline-block;
-            right: $accodion-spacing;
-            position: absolute;
-        }
+        border: none;
+        background: white;
+        padding: 16px;
+        //outline: none;
+        font-size: 16px;
+        font-weight: 700;
+        color: black;
     }
+    .accordion--button.show {
+        padding-bottom: 8px;
+    }
+
+    // 展開部分
     .accordion--body {
-        padding: $accodion-spacing;
+        padding: 0px 16px 16px 16px;
+        height: 0;
+        transition: height 0.1s;
+    }
+    .accordion--body.show {
+        height: auto;
     }
 }
 </style>

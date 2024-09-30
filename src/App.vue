@@ -4,8 +4,9 @@ import JTable from "./components/Table/Table.vue";
 // import RTable from "./components/TableNew.vue";
 import ChartJs from "./components/ChartJs/ChartJs.vue";
 import Fuck from "./components/ChartJs/Fuck.vue";
-import Accordion from "./components/Accordion/Accordion.vue";
+// import Accordion from "./components/Accordion/Accordion.vue";
 import Datepicker from "./components/Datepicker/Datepicker.vue";
+import AccordionTest from "./components/Accordion/AccordionTest.vue";
 
 const columnHeadData = [
     { key: "id", label: "ID", sort: true },
@@ -221,6 +222,30 @@ const isRadioPicked = ref("");
 //         life: 3000,
 //     });
 // };
+
+const accordionItems = ref([
+  {
+    title: "Apples",
+    expanded: false,
+    contents: [
+      "Apples are a fine fruit often associated with good health, and fewer doctor's appointments.",
+      "Example: An apple a day keeps the doctor away.",
+    ],
+  },
+  {
+    title: "Lemons",
+    expanded: false,
+    contents: [
+      "Lemons are good with almost anything, yet are often have a negative connotation when used in conversation.",
+      "Example: The bread from the french bakery is normally very good, but the one we bought today was a lemon.",
+    ],
+  },
+  {
+    title: "Kiwis",
+    expanded: false,
+    contents: ["Kiwis are a fun, under-appreciated fruit."],
+  },
+]);
 </script>
 
 <template>
@@ -494,20 +519,22 @@ const isRadioPicked = ref("");
 
     <!-- ChartJs -->
     <div style="width: 50%">
-        <ChartJs></ChartJs>
+<!--        <ChartJs></ChartJs>-->
     </div>
 
-    <Fuck></Fuck>
+<!--    <Fuck></Fuck>-->
 
-    <Accordion></Accordion>
-    <Accordion></Accordion>
+<!--    <Accordion></Accordion>-->
+<!--    <Accordion></Accordion>-->
 
-    <Datepicker range></Datepicker>
+<!--    <Datepicker range></Datepicker>-->
 
-    <Datepicker></Datepicker>
-    <Datepicker range></Datepicker>
+<!--    <Datepicker></Datepicker>-->
+<!--    <Datepicker range></Datepicker>-->
     <!-- <Datepicker range></Datepicker> -->
     <!-- <Datepicker></Datepicker> -->
+
+  <AccordionTest :data="accordionItems"></AccordionTest>
 </template>
 
 <style scoped>
@@ -542,4 +569,9 @@ const isRadioPicked = ref("");
     --thumbWidth: 20px;
     --thumbhright: 20px;
 }
+/* http://meyerweb.com/eric/tools/css/reset/
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
 </style>
