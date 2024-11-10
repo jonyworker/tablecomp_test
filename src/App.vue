@@ -1,3 +1,4 @@
+divdivdivdiv
 <script setup>
 import { ref, reactive } from "vue";
 import JTable from "./components/Table/Table.vue";
@@ -7,6 +8,11 @@ import Fuck from "./components/ChartJs/Fuck.vue";
 // import Accordion from "./components/Accordion/Accordion.vue";
 import Datepicker from "./components/Datepicker/Datepicker.vue";
 import AccordionTest from "./components/Accordion/AccordionTest.vue";
+import FakeContent from "./components/FakeContent/FakeContent.vue";
+import ToastProvide from "./components/ToastProvide/ToastProvide.vue";
+import NavigationDrawer from "./components/NavigationDrawer/NavigationDrawer.vue";
+import NavigationDrawerClickOutSide from "./components/NavigationDrawerClickOutSide/NavigationDrawerClickOutSide.vue";
+import Divider from "./components/Divider/Divider.vue";
 
 const columnHeadData = [
     { key: "id", label: "ID", sort: true },
@@ -224,27 +230,27 @@ const isRadioPicked = ref("");
 // };
 
 const accordionItems = ref([
-  {
-    title: "Apples",
-    expanded: false,
-    contents: [
-      "Apples are a fine fruit often associated with good health, and fewer doctor's appointments.",
-      "Example: An apple a day keeps the doctor away.",
-    ],
-  },
-  {
-    title: "Lemons",
-    expanded: false,
-    contents: [
-      "Lemons are good with almost anything, yet are often have a negative connotation when used in conversation.",
-      "Example: The bread from the french bakery is normally very good, but the one we bought today was a lemon.",
-    ],
-  },
-  {
-    title: "Kiwis",
-    expanded: false,
-    contents: ["Kiwis are a fun, under-appreciated fruit."],
-  },
+    {
+        title: "Apples",
+        expanded: false,
+        contents: [
+            "Apples are a fine fruit often associated with good health, and fewer doctor's appointments.",
+            "Example: An apple a day keeps the doctor away.",
+        ],
+    },
+    {
+        title: "Lemons",
+        expanded: false,
+        contents: [
+            "Lemons are good with almost anything, yet are often have a negative connotation when used in conversation.",
+            "Example: The bread from the french bakery is normally very good, but the one we bought today was a lemon.",
+        ],
+    },
+    {
+        title: "Kiwis",
+        expanded: false,
+        contents: ["Kiwis are a fun, under-appreciated fruit."],
+    },
 ]);
 </script>
 
@@ -257,10 +263,10 @@ const accordionItems = ref([
     >
         <!-- <template #name="{ item }">
             <span :style="{ color: item.name === 'John' ? 'red' : '' }">
-                {{ item.name }}
-                <button>典籍</button>
+            {{ item.name }}
+            <button>典籍</button>
             </span>
-        </template> -->
+            </template> -->
     </j-table>
 
     <r-table
@@ -506,35 +512,42 @@ const accordionItems = ref([
     </r-table>
 
     <!-- <Rating v-model="ratingData"></Rating>
-    {{ ratingData }}
-    <Accordion></Accordion>
-    isRadioPicked>>> {{ isRadioPicked }}
-    <div></div>
-    <RadioButton
+        {{ ratingData }}
+        <Accordion></Accordion>
+        isRadioPicked>>> {{ isRadioPicked }}
+        <div></div>
+        <RadioButton
         v-for="item in radioList"
         :value="item.value"
         :label="item.label"
         v-model="isRadioPicked"
-    ></RadioButton> -->
+        ></RadioButton> -->
 
     <!-- ChartJs -->
     <div style="width: 50%">
-<!--        <ChartJs></ChartJs>-->
+        <!--        <ChartJs></ChartJs>-->
     </div>
 
-<!--    <Fuck></Fuck>-->
+    <!--    <Fuck></Fuck>-->
 
-<!--    <Accordion></Accordion>-->
-<!--    <Accordion></Accordion>-->
+    <!--    <Accordion></Accordion>-->
+    <!--    <Accordion></Accordion>-->
 
-<!--    <Datepicker range></Datepicker>-->
+    <!--    <Datepicker range></Datepicker>-->
 
-<!--    <Datepicker></Datepicker>-->
-<!--    <Datepicker range></Datepicker>-->
+    <!--    <Datepicker></Datepicker>-->
+    <!--    <Datepicker range></Datepicker>-->
     <!-- <Datepicker range></Datepicker> -->
     <!-- <Datepicker></Datepicker> -->
 
-  <AccordionTest :data="accordionItems"></AccordionTest>
+    <!--<AccordionTest :data="accordionItems"></AccordionTest>-->
+    <div style="display: flex; width: 400px; height: 400px">
+        <FakeContent>fake</FakeContent>
+    </div>
+    <Divider>text</Divider>
+    <NavigationDrawer></NavigationDrawer>
+
+    <NavigationDrawerClickOutSide></NavigationDrawerClickOutSide>
 </template>
 
 <style scoped>
@@ -573,5 +586,4 @@ const accordionItems = ref([
    v2.0 | 20110126
    License: none (public domain)
 */
-
 </style>

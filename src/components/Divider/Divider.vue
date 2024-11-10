@@ -5,187 +5,207 @@ const props = defineProps({
     layout: {
         //線條方向
         type: String,
+        default: "horizontal",
+        validator: (value) => ["horizontal", "vertical"].includes(value),
+    },
+    width: {
+        //線條粗細
+        type: String,
+        default: "xsmall",
+        validator: (value) =>
+            ["xsmall", "small", "medium", "large", "xlarge"].includes(value),
     },
     type: {
         //線條種類
         type: String,
+        default: "solid",
+        validator: (value) => ["solid", "dashed", "dotted"].includes(value),
     },
     themeColor: {
         //線條顏色
         type: String,
-    },
-
-    width: {
-        //線條粗細
-        type: String,
+        validator: (value) =>
+            [
+                "primary",
+                "secondary",
+                "tertiary",
+                "success",
+                "warning",
+                "error",
+                "info",
+            ].includes(value),
     },
     align: {
         //文字位置
         type: String,
+        validator: (value) => ["start", "center", "end"].includes(value),
+        default: "center",
     },
 });
 </script>
 
 <template>
-    <!--Divider(H) - line only - solid -->
     <div
-        class="divider component divider-horizontal divider-width-1 divider-solid"
-        role="separator"
-    ></div>
-
-    <!--Divider(H) - line only - sashed -->
-    <div
-        class="divider component divider-horizontal divider-width-1 divider-dashed"
-        role="separator"
-    ></div>
-
-    <!--Divider(V) - line only - solid -->
-    <div
-        class="divider component divider-vertical divider-width-1 divider-solid"
-        role="separator"
-    ></div>
-
-    <!--Divider(H) - with content left - solid -->
-    <div
-        class="divider component divider-horizontal divider-width-1 divider-solid divider-left"
-        role="separator"
+        :class="[
+            'divider',
+            `divider-${props.layout}`,
+            `divider-width-${props.width}`,
+            `divider-${props.type}`,
+            props.themeColor ? `divider-${props.themeColor}` : '',
+            $slots.default ? `divider-${props.align}` : '',
+        ]"
     >
-        <div class="divider-content" data-pc-section="content">
-            <b>Left</b>
-        </div>
-    </div>
-
-    <!--Divider(H) - with content center - solid -->
-    <div
-        class="divider component divider-vertical divider-width-1 divider-solid divider-bottom"
-        role="separator"
-    >
-        <div class="divider-content" data-pc-section="content">
-            <b>bottom</b>
+        <!-- divider - 分隔線文字 -->
+        <div v-if="$slots.default?.()" class="divider-content">
+            <b><slot></slot></b>
         </div>
     </div>
 </template>
 
 <style lang="css" scoped>
-/*--- Divider layout ---*/
-.divider-horizontal {
+/*--- Divider ---*/
+.divider {
     display: flex;
-    width: 100%;
-    position: relative;
+}
+
+/*--- Divider 方向 ---*/
+.divider-horizontal {
     align-items: center;
 }
-
-.divider-horizontal:before {
-    position: absolute;
-    display: block;
-    top: 50%;
-    left: 0;
-    width: 100%;
-    content: "";
-}
-
 .divider-vertical {
-    min-height: 100%;
-    margin: 0 1rem;
-    display: flex;
-    position: relative;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100px; /* demo 用 */
+}
+/*--- Divider 方向 ---*/
+.divider-horizontal.divider::before,
+.divider-horizontal.divider::after {
+    content: "";
+    border-top: 1px solid red;
+    /* border-top: 1px solid $color-gray20; */
+    flex-grow: 1;
 }
 
-.divider-vertical:before {
-    position: absolute;
-    display: block;
-    top: 0;
-    left: 50%;
-    height: 100%;
+.divider-vertical.divider::before,
+.divider-vertical.divider::after {
     content: "";
+    border-left: 1px solid red;
+    /* border-left: 1px solid $color-gray20; */
+    flex-grow: 1;
+}
+
+/*--- Divider 線條種類 - Horizontal ---*/
+.divider-solid.divider-horizontal.divider::before,
+.divider-solid.divider-horizontal.divider::after {
+    border-top-style: solid;
+}
+.divider-dotted.divider-horizontal.divider::before,
+.divider-dotted.divider-horizontal.divider::after {
+    border-top-style: dotted;
+}
+.divider-dashed.divider-horizontal.divider::before,
+.divider-dashed.divider-horizontal.divider::after {
+    border-top-style: dashed;
+}
+
+/*--- Divider 線條種類 - vertical ---*/
+.divider-solid.divider-vertical.divider::before,
+.divider-solid.divider-vertical.divider::after {
+    border-left-style: solid;
+}
+.divider-dotted.divider-vertical.divider::before,
+.divider-dotted.divider-vertical.divider::after {
+    border-left-style: dotted;
+}
+.divider-dashed.divider-vertical.divider::before,
+.divider-dashed.divider-vertical.divider::after {
+    border-left-style: dashed;
+}
+
+/*--- Divider 線條粗細 - Horizontal ---*/
+.divider-width-xsmall.divider-horizontal.divider::before,
+.divider-width-xsmall.divider-horizontal.divider::after {
+    border-top-width: 1px;
+}
+.divider-width-small.divider-horizontal.divider::before,
+.divider-width-small.divider-horizontal.divider::after {
+    border-top-width: 2px;
+}
+.divider-width-medium.divider-horizontal.divider::before,
+.divider-width-medium.divider-horizontal.divider::after {
+    border-top-width: 4px;
+}
+.divider-width-large.divider-horizontal.divider::before,
+.divider-width-large.divider-horizonta.divider::after {
+    border-top-width: 6px;
+}
+.divider-width-xlarge.divider-horizontal.divider::before,
+.divider-width-xlarge.divider-horizontal.divider::after {
+    border-top-width: 8px;
+}
+
+/*--- Divider 線條粗細 - vertical ---*/
+.divider-width-xsmall.divider-vertical.divider::before,
+.divider-width-xsmall.divider-vertical.divider::after {
+    border-left-width: 1px;
+}
+.divider-width-small.divider-vertical.divider::before,
+.divider-width-small.divider-vertical.divider::after {
+    border-left-width: 2px;
+}
+.divider-width-medium.divider-vertical.divider::before,
+.divider-width-medium.divider-vertical.divider::after {
+    border-left-width: 4px;
+}
+.divider-width-large.divider-vertical.divider::before,
+.divider-width-large.divider-vertical.divider::after {
+    border-left-width: 6px;
+}
+.divider-width-xlarge.divider-vertical.divider::before,
+.divider-width-xlarge.divider-vertical.divider::after {
+    border-left-width: 8px;
 }
 
 /*--- Divider content ---*/
 .divider-content {
     z-index: 1;
-}
-.divider .divider-content {
-    background-color: #ffffff;
-}
-.divider.divider-horizontal .divider-content {
-    padding: 0 0.5rem;
-}
-.divider.divider-vertical .divider-content {
-    padding: 0.5rem 0;
+    padding: 0.5em;
 }
 
-/*--- Divider border type ---*/
-.divider.divider-solid.divider-horizontal:before {
-    border-top-style: solid;
+/*--- Divider 對齊位置 - Horizontal ---*/
+.divider-start.divider-horizontal.divider::before {
+    flex-grow: 0;
+    width: 1rem;
 }
-.divider.divider-solid.divider-vertical:before {
-    border-left-style: solid;
-}
-.divider.divider-dashed.divider-horizontal:before {
-    border-top-style: dashed;
-}
-.divider.divider-dashed.divider-vertical:before {
-    border-left-style: dashed;
-}
-.divider.divider-dotted.divider-horizontal:before {
-    border-top-style: dotted;
-}
-.divider.divider-dotted.divider-vertical:before {
-    border-left-style: dotted;
+.divider-end.divider-horizontal.divider::after {
+    flex-grow: 0;
+    width: 1rem;
 }
 
-/*--- Divider horizontal border width ---*/
-.divider.divider-horizontal {
-    margin: 1rem 0;
-    padding: 0 1rem;
+/*--- Divider 對齊位置 - vertical ---*/
+.divider-start.divider-vertical.divider::before {
+    flex-grow: 0;
+    height: 1rem;
 }
-.divider.divider-horizontal:before {
-    border-top-width: 1px;
-    border-top-color: #f00;
-}
-.divider.divider-horizontal:before.divider-width-2 {
-    border-top-width: 2px;
-}
-.divider.divider-horizontal:before.divider-width-4 {
-    border-top-width: 4px;
+.divider-end.divider-vertical.divider::after {
+    flex-grow: 0;
+    height: 1rem;
 }
 
-/*--- Divider vertical border width ---*/
-.divider.divider-vertical {
-    margin: 0 1rem;
-    padding: 1rem 0;
+/* @each $theme in $themes {
+    .divider-#{$theme}.divider-vertical.divider::before {
+        border-left-color: getThemeColor($mode, $theme, "default");
+    }
+    .divider-#{$theme}.divider-vertical.divider::after {
+        border-left-color: getThemeColor($mode, $theme, "default");
+    }
 }
-.divider.divider-vertical:before {
-    border-left-width: 1px;
-    border-left-color: #f00;
-}
-.divider.divider-vertical:before.divider-width-2 {
-    border-left-width: 2px;
-}
-.divider.divider-vertical:before.divider-width-4 {
-    border-left-width: 4px;
-}
-
-/*--- Divider horizontal align ---*/
-.divider-left.divider-horizontal {
-    justify-content: flex-start;
-}
-.divider-center.divider-horizontal {
-    justify-content: center;
-}
-.divider-right.divider-horizontal {
-    justify-content: flex-end;
-}
-
-/*--- Divider vertical align ---*/
-.divider-top.divider-vertical {
-    align-items: flex-start;
-}
-.divider-center.divider-vertical {
-    align-items: center;
-}
-.divider-bottom.divider-vertical {
-    align-items: flex-end;
-}
+@each $theme in $themes {
+    .divider-#{$theme}.divider-horizontal.divider::before {
+        border-top-color: getThemeColor($mode, $theme, "default");
+    }
+    .divider-#{$theme}.divider-horizontal.divider::after {
+        border-top-color: getThemeColor($mode, $theme, "default");
+    }
+} */
 </style>
